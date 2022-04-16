@@ -4,18 +4,60 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Vpotify</title>
+        <link
+            rel="shortcut icon"
+            href="https://res.cloudinary.com/web-upload/image/upload/v1646980665/favicon_kobqjp.ico"
+            type="image/x-icon"
+        />
+        <title>V music</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+            integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <link rel="stylesheet" href="./assets/css/style.css" />
     </head>
     <body>
         <div id="main">
-            Hai đám mây
-            <audio controls>
-                <source
-                    src="./assets/music/HaiDamMay-Khoi-6759638.mp3"
-                    type="audio/ogg"
+            <div class="dashboard">
+                <div id="music-name"></div>
+                <div id="cd">
+                    <div class="dashboard-cd"></div>
+                </div>
+                <div id="control">
+                    <div class="control-button">
+                        <i class="fa-solid fa-repeat"></i>
+                    </div>
+
+                    <div id="prev-btn" class="control-button">
+                        <i class="fas fa-step-backward"></i>
+                    </div>
+                    <div id="play-button" class="control-button toggle-play">
+                        <i class="fa-solid fa-circle-pause pause-btn"></i>
+                        <i class="fa-solid fa-circle-play play-btn"></i>
+                    </div>
+                    <div id="next-btn" class="control-button">
+                        <i class="fas fa-step-forward"></i>
+                    </div>
+                    <div class="control-button">
+                        <i class="fas fa-random"></i>
+                    </div>
+                </div>
+                <input
+                    type="range"
+                    id="time-bar"
+                    class="progress"
+                    value="0"
+                    step="1"
+                    min="1"
+                    max="100"
                 />
-                Your browser does not support the audio element.
-            </audio>
+                <audio id="current-song" src=""></audio>
+            </div>
+            <div id="song-list"></div>
         </div>
+        <script src="./index.js"></script>
     </body>
 </html>
