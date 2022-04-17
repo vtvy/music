@@ -140,24 +140,26 @@ const music = {
         // Set the time bar
         currentSong.ontimeupdate = function () {
             const duration = currentSong.duration;
-            // console.log(duration);
-            const currentTime = currentSong.currentTime;
-            const percent = (currentTime / duration) * 100;
-            timeBar.value = percent;
+            if (duration) {
+                const currentTime = currentSong.currentTime;
+                const percent = (currentTime / duration) * 100;
+                timeBar.value = percent;
+                const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
+                timeBar.style.background = color;
+            }
+        };
+
+        timeBar.onmousemove = function (e) {
+            console.log(this.clicked);
+            const percent = e.target.value;
             const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
             timeBar.style.background = color;
         };
 
         // Change the time bar
-        timeBar.onchange = function (e) {
-            currentSong.currentTime =
-                (currentSong.duration / 100) * e.target.value;
-        };
-
-        timeBar.mousemove = function (e) {
+        timeBar.onclick = function (e) {
             const percent = e.target.value;
-            const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
-            timeBar.style.background = color;
+            currentSong.currentTime = (currentSong.duration / 100) * percent;
         };
     },
 
