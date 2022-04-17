@@ -37,16 +37,20 @@ body {
 }
 
 .dashboard-cd {
-    background: no-repeat center / cover;
+    background: center / cover;
     width: 12rem;
     padding-top: 100%;
     border-radius: 50%;
     margin: 1rem 0;
 }
 
-.active {
+.playing-song {
     background-color: var(--main-color) !important;
     color: #fff;
+}
+
+.active {
+    color: var(--main-color);
 }
 
 #control {
@@ -55,9 +59,19 @@ body {
 
 .control-button {
     display: inline;
-    margin: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
     font-size: 1.5rem;
     align-self: center;
+}
+
+.control-button:hover {
+    transform: scale(1.2);
+    transition: transform 0.2s;
+}
+
+#prev-btn:hover,
+#next-btn:hover {
+    color: var(--main-color);
 }
 
 #play-button {

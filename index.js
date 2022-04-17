@@ -2,9 +2,11 @@ const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 const cd = $("#cd");
+const repeatBtn = $("#repeat-btn");
 const prevBtn = $("#prev-btn");
 const playBtn = $("#play-button");
 const nextBtn = $("#next-btn");
+const randomBtn = $("#random-btn");
 const currentSong = $("#current-song");
 const timeBar = $("#time-bar");
 const songList = $("#song-list");
@@ -12,8 +14,12 @@ const music = {
     currentIndexSong: 1,
     playing: false,
     random: false,
-    repeat: false,
-    settings: {},
+    repeating: false,
+    settings: JSON.parse(localStorage.getItem("settings")) || {},
+    setUserSettings: function (key, value) {
+        this.settings[key] = value;
+        localStorage.setItem("settings", JSON.stringify(this.settings));
+    },
     songs: [
         {
             name: "Hai đám mây",
@@ -87,6 +93,42 @@ const music = {
         });
     },
 
+    loadSong: function () {
+        $("#music-name").textContent = this.dashboardSong.name;
+        $(
+            ".dashboard-cd"
+        ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
+        currentSong.src = this.dashboardSong.path;
+    },
+
+    prevSong: function () {
+        if (this.currentIndexSong === 0) {
+            this.currentIndexSong = this.songs.length - 1;
+        } else {
+            this.currentIndexSong--;
+        }
+        this.loadSong();
+    },
+
+    nextSong: function () {
+        if (this.currentIndexSong === this.songs.length - 1) {
+            this.currentIndexSong = 0;
+        } else {
+            this.currentIndexSong++;
+        }
+        this.loadSong();
+    },
+
+    randomSong: function () {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * this.songs.length);
+        } while (newIndex === this.currentIndex);
+
+        this.currentIndex = newIndex;
+        this.loadCurrentSong();
+    },
+
     // Listening and handling function declare
     handleEvents: function () {
         const thisMusic = this;
@@ -96,13 +138,13 @@ const music = {
         });
         cdRotate.pause();
 
+        repeatBtn.onclick = () => {
+            thisMusic.repeating = !thisMusic.repeating;
+            thisMusic.setUserSettings("repeating", thisMusic.repeating);
+            repeatBtn.classList.toggle("active", thisMusic.repeating);
+        };
+
         prevBtn.onclick = () => {
-            if (this.currentIndexSong === 0) {
-                this.currentIndexSong = this.songs.length - 1;
-            } else {
-                this.currentIndexSong--;
-            }
-            this.loadSong();
             currentSong.play();
         };
 
@@ -116,31 +158,31 @@ const music = {
         };
 
         nextBtn.onclick = () => {
-            if (this.currentIndexSong === this.songs.length - 1) {
-                this.currentIndexSong = 0;
-            } else {
-                this.currentIndexSong++;
-            }
-            this.loadSong();
             currentSong.play();
         };
 
-        currentSong.onplay = function () {
+        randomBtn.onclick = () => {
+            thisMusic.random = !thisMusic.random;
+            thisMusic.setUserSettings("random", thisMusic.random);
+            randomBtn.classList.toggle("active", thisMusic.random);
+        };
+
+        currentSong.onplay = () => {
             thisMusic.playing = true;
             playBtn.classList.add("playing");
             cdRotate.play();
         };
 
-        currentSong.onpause = function () {
+        currentSong.onpause = () => {
             thisMusic.playing = false;
             playBtn.classList.remove("playing");
             cdRotate.pause();
         };
 
         // Set the time bar
-        currentSong.ontimeupdate = function () {
+        currentSong.ontimeupdate = () => {
             const duration = currentSong.duration;
-            if (duration) {
+            if (duration && timeBar.getAttribute("clicked") !== "true") {
                 const currentTime = currentSong.currentTime;
                 const percent = (currentTime / duration) * 100;
                 timeBar.value = percent;
@@ -148,27 +190,31 @@ const music = {
                 timeBar.style.background = color;
             }
         };
+        timeBar.onmousedown = () => {
+            timeBar.setAttribute("clicked", "true");
+        };
 
-        timeBar.onmousemove = function (e) {
-            console.log(this.clicked);
+        timeBar.onmousemove = (e) => {
             const percent = e.target.value;
             const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
             timeBar.style.background = color;
         };
 
         // Change the time bar
-        timeBar.onclick = function (e) {
+        timeBar.onclick = (e) => {
             const percent = e.target.value;
             currentSong.currentTime = (currentSong.duration / 100) * percent;
         };
-    },
 
-    loadSong: function () {
-        $("#music-name").textContent = this.dashboardSong.name;
-        $(
-            ".dashboard-cd"
-        ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
-        currentSong.src = this.dashboardSong.path;
+        timeBar.onmouseup = function () {
+            timeBar.setAttribute("clicked", "false");
+        };
+
+        currentSong.onended = () => {
+            thisMusic.currentIndexSong++;
+            // if(thisMusic)
+            thisMusic.loadSong();
+        };
     },
 
     start: function () {
