@@ -145,6 +145,11 @@ const music = {
         };
 
         prevBtn.onclick = () => {
+            if (thisMusic.random) {
+                thisMusic.randomSong();
+            } else {
+                thisMusic.prevSong();
+            }
             currentSong.play();
         };
 
@@ -158,6 +163,11 @@ const music = {
         };
 
         nextBtn.onclick = () => {
+            if (thisMusic.random) {
+                thisMusic.randomSong();
+            } else {
+                thisMusic.nextSong();
+            }
             currentSong.play();
         };
 
@@ -190,6 +200,7 @@ const music = {
                 timeBar.style.background = color;
             }
         };
+
         timeBar.onmousedown = () => {
             timeBar.setAttribute("clicked", "true");
         };
@@ -211,9 +222,16 @@ const music = {
         };
 
         currentSong.onended = () => {
-            thisMusic.currentIndexSong++;
-            // if(thisMusic)
-            thisMusic.loadSong();
+            if (thisMusic.repeating) {
+                thisMusic.play();
+            } else {
+                if (thisMusic.random) {
+                    thisMusic.randomSong();
+                } else {
+                    thisMusic.nextSong();
+                }
+                currentSong.play();
+            }
         };
     },
 
