@@ -8,66 +8,117 @@ const playBtn = $("#play-button");
 const nextBtn = $("#next-btn");
 const randomBtn = $("#random-btn");
 const currentSong = $("#current-song");
+const currentTime = $("#current-time");
 const timeBar = $("#time-bar");
+const durationTime = $("#duration-time");
+const volumeBtn = $("#volume-btn");
+const volumeSlider = $("#volume-slider");
 const songList = $("#song-list");
 const music = {
-    currentIndexSong: 1,
     playing: false,
-    random: false,
-    repeating: false,
+    playingNumber: 0,
     settings: JSON.parse(localStorage.getItem("settings")) || {},
+
     setUserSettings: function (key, value) {
         this.settings[key] = value;
         localStorage.setItem("settings", JSON.stringify(this.settings));
     },
     songs: [
         {
-            name: "Hai đám mây",
-            singer: "Khói",
+            name: "3107",
+            owner: "W/n, Duongg, Nâu",
             path: "./assets/music/song1.mp3",
             image: "./assets/images/image1.jpg",
         },
         {
             name: "See tình",
-            singer: "Hoàng Thùy Linh",
+            owner: "Hoàng Thùy Linh",
             path: "./assets/music/song2.mp3",
             image: "./assets/images/image2.jpg",
         },
         {
             name: "Muộn rồi mà sao còn",
-            singer: "Sơn Tùng MTP",
+            owner: "Sơn Tùng MTP",
             path: "./assets/music/song3.mp3",
             image: "./assets/images/image3.jpg",
         },
         {
             name: "Hãy trao cho anh",
-            singer: "Sơn Tùng MTP",
+            owner: "Sơn Tùng MTP",
             path: "./assets/music/song4.mp3",
             image: "./assets/images/image4.jpg",
         },
         {
             name: "Chạy ngay đi",
-            singer: "Sơn Tùng MTP",
+            owner: "Sơn Tùng MTP",
             path: "./assets/music/song5.mp3",
             image: "./assets/images/image5.jpg",
         },
         {
             name: "Chúng ta của hiện tại",
-            singer: "Khói",
+            owner: "Khói",
             path: "./assets/music/song6.m4a",
             image: "./assets/images/image6.jpg",
         },
         {
             name: "Là do em xui thôi",
-            singer: "Khói",
+            owner: "Khói",
             path: "./assets/music/song7.mp3",
             image: "./assets/images/image7.jpg",
         },
         {
             name: "Hai đám mây",
-            singer: "Khói",
+            owner: "Khói",
+            path: "./assets/music/song8.mp3",
+            image: "./assets/images/image8.jpg",
+        },
+        {
+            name: "3107",
+            owner: "W/n, Duongg, Nâu",
             path: "./assets/music/song1.mp3",
             image: "./assets/images/image1.jpg",
+        },
+        {
+            name: "See tình",
+            owner: "Hoàng Thùy Linh",
+            path: "./assets/music/song2.mp3",
+            image: "./assets/images/image2.jpg",
+        },
+        {
+            name: "Muộn rồi mà sao còn",
+            owner: "Sơn Tùng MTP",
+            path: "./assets/music/song3.mp3",
+            image: "./assets/images/image3.jpg",
+        },
+        {
+            name: "Hãy trao cho anh",
+            owner: "Sơn Tùng MTP",
+            path: "./assets/music/song4.mp3",
+            image: "./assets/images/image4.jpg",
+        },
+        {
+            name: "Chạy ngay đi",
+            owner: "Sơn Tùng MTP",
+            path: "./assets/music/song5.mp3",
+            image: "./assets/images/image5.jpg",
+        },
+        {
+            name: "Chúng ta của hiện tại",
+            owner: "Khói",
+            path: "./assets/music/song6.m4a",
+            image: "./assets/images/image6.jpg",
+        },
+        {
+            name: "Là do em xui thôi",
+            owner: "Khói",
+            path: "./assets/music/song7.mp3",
+            image: "./assets/images/image7.jpg",
+        },
+        {
+            name: "Hai đám mây",
+            owner: "Khói",
+            path: "./assets/music/song8.mp3",
+            image: "./assets/images/image8.jpg",
         },
     ],
 
@@ -75,8 +126,12 @@ const music = {
     showSongList: function () {
         const List = this.songs.map((song, index) => {
             return `
-                <div class="song">
-                    <div class="song-image" style="background-image: url('${song.image}')"></div>
+                <div song-index="${index}" class="song ${
+                index === this.settings.currentSongIndex ? "playing-song" : ""
+            }">
+                    <div class="song-image" style="background-image: url('${
+                        song.image
+                    }')"></div>
                     <div class="song-name">${song.name}</div>
                 </div>
             `;
@@ -85,12 +140,75 @@ const music = {
         songList.innerHTML = List.join("");
     },
 
+    loadSettings: function () {
+        if (
+            typeof this.settings.currentSongIndex !== "number" ||
+            isNaN(this.settings.currentSongIndex)
+        ) {
+            this.settings.currentSongIndex = 0;
+        }
+
+        if (!(this.settings.volume >= 0 && this.settings.volume <= 1)) {
+            this.settings.volume = 1;
+        }
+
+        if (typeof this.settings.mute !== "boolean") {
+            this.settings.mute = false;
+        }
+
+        if (typeof this.settings.random !== "boolean") {
+            this.settings.random = false;
+        }
+
+        if (typeof this.settings.repeating !== "boolean") {
+            this.setUserSettings("repeating", false);
+        }
+
+        // Set the default UI for user settings
+
+        if (this.settings.mute) {
+            $("#on-volume").classList.toggle("show", !this.settings.mute);
+            $("#mute-volume").classList.toggle("show", this.settings.mute);
+            volumeSlider.value = 0;
+            currentSong.mute = true;
+            volumeSlider.style.background = this.setColor(0);
+        } else {
+            volumeSlider.value = this.settings.volume * 100;
+            volumeSlider.style.background = this.setColor(volumeSlider.value);
+        }
+
+        if (this.settings.repeating) {
+            repeatBtn.classList.toggle("active", this.settings.repeating);
+        }
+
+        if (this.settings.random) {
+            randomBtn.classList.toggle("active", this.settings.random);
+        }
+    },
+
     setSong: function () {
         Object.defineProperty(this, "dashboardSong", {
             get: function () {
-                return this.songs[this.currentIndexSong];
+                return this.songs[this.settings.currentSongIndex];
             },
         });
+    },
+
+    setColor: function (percent) {
+        return `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
+    },
+
+    convertTime: function (time) {
+        let minute = Math.floor(time / 60);
+        if (minute < 10) {
+            minute = "0" + String(minute);
+        }
+        var seccond = Math.floor(time % 60);
+        if (seccond < 10) {
+            seccond = "0" + String(seccond);
+        }
+
+        return minute + ":" + seccond;
     },
 
     loadSong: function () {
@@ -99,22 +217,29 @@ const music = {
             ".dashboard-cd"
         ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
         currentSong.src = this.dashboardSong.path;
+        setTimeout(() => {
+            $(".song.playing-song").classList.remove("playing-song");
+            $(
+                `.song[song-index="${this.settings.currentSongIndex}"]`
+            ).classList.add("playing-song");
+            this.scrollIntoView();
+        }, 200);
     },
 
     prevSong: function () {
-        if (this.currentIndexSong === 0) {
-            this.currentIndexSong = this.songs.length - 1;
+        if (this.settings.currentSongIndex === 0) {
+            this.settings.currentSongIndex = this.songs.length - 1;
         } else {
-            this.currentIndexSong--;
+            this.settings.currentSongIndex--;
         }
         this.loadSong();
     },
 
     nextSong: function () {
-        if (this.currentIndexSong === this.songs.length - 1) {
-            this.currentIndexSong = 0;
+        if (this.settings.currentSongIndex === this.songs.length - 1) {
+            this.settings.currentSongIndex = 0;
         } else {
-            this.currentIndexSong++;
+            this.settings.currentSongIndex++;
         }
         this.loadSong();
     },
@@ -123,10 +248,36 @@ const music = {
         let newIndex;
         do {
             newIndex = Math.floor(Math.random() * this.songs.length);
-        } while (newIndex === this.currentIndex);
+        } while (newIndex === this.settings.currentSongIndex);
+        this.setUserSettings("currentSongIndex", newIndex);
+        this.loadSong();
+    },
 
-        this.currentIndex = newIndex;
-        this.loadCurrentSong();
+    muteSong: function () {
+        this.settings.mute = !this.settings.mute;
+        this.setUserSettings("settings.mute", this.settings.mute);
+        $("#on-volume").classList.toggle("show", !this.settings.mute);
+        $("#mute-volume").classList.toggle("show", this.settings.mute);
+        if (this.settings.mute) {
+            volumeSlider.value = 0;
+            currentSong.mute = true;
+            volumeSlider.style.background = this.setColor(0);
+        } else {
+            volumeSlider.value = this.settings.volume * 100;
+            currentSong.mute = false;
+            volumeSlider.style.background = this.setColor(
+                this.settings.volume * 100
+            );
+        }
+    },
+
+    scrollIntoView: function () {
+        $(
+            `.song[song-index="${this.settings.currentSongIndex}"]`
+        ).scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
     },
 
     // Listening and handling function declare
@@ -139,13 +290,16 @@ const music = {
         cdRotate.pause();
 
         repeatBtn.onclick = () => {
-            thisMusic.repeating = !thisMusic.repeating;
-            thisMusic.setUserSettings("repeating", thisMusic.repeating);
-            repeatBtn.classList.toggle("active", thisMusic.repeating);
+            thisMusic.settings.repeating = !thisMusic.settings.repeating;
+            thisMusic.setUserSettings(
+                "settings.repeating",
+                thisMusic.settings.repeating
+            );
+            repeatBtn.classList.toggle("active", thisMusic.settings.repeating);
         };
 
         prevBtn.onclick = () => {
-            if (thisMusic.random) {
+            if (thisMusic.settings.random) {
                 thisMusic.randomSong();
             } else {
                 thisMusic.prevSong();
@@ -163,7 +317,7 @@ const music = {
         };
 
         nextBtn.onclick = () => {
-            if (thisMusic.random) {
+            if (thisMusic.settings.random) {
                 thisMusic.randomSong();
             } else {
                 thisMusic.nextSong();
@@ -172,13 +326,24 @@ const music = {
         };
 
         randomBtn.onclick = () => {
-            thisMusic.random = !thisMusic.random;
-            thisMusic.setUserSettings("random", thisMusic.random);
-            randomBtn.classList.toggle("active", thisMusic.random);
+            thisMusic.settings.random = !thisMusic.settings.random;
+            thisMusic.setUserSettings("random", thisMusic.settings.random);
+            randomBtn.classList.toggle("active", thisMusic.settings.random);
+        };
+
+        volumeBtn.onclick = (e) => {
+            if (e.target.tagName === "I") {
+                thisMusic.muteSong();
+            }
         };
 
         currentSong.onplay = () => {
-            thisMusic.playing = true;
+            if (durationTime.textContent === "" && currentSong.duration) {
+                durationTime.textContent = thisMusic.convertTime(
+                    currentSong.duration
+                );
+            }
+            thisMusic.settings.playing = true;
             playBtn.classList.add("playing");
             cdRotate.play();
         };
@@ -192,12 +357,28 @@ const music = {
         // Set the time bar
         currentSong.ontimeupdate = () => {
             const duration = currentSong.duration;
-            if (duration && timeBar.getAttribute("clicked") !== "true") {
-                const currentTime = currentSong.currentTime;
-                const percent = (currentTime / duration) * 100;
-                timeBar.value = percent;
-                const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
-                timeBar.style.background = color;
+            if (duration) {
+                const currentSongTime = currentSong.currentTime;
+                currentTime.textContent =
+                    thisMusic.convertTime(currentSongTime);
+                if (timeBar.getAttribute("clicked") !== "true") {
+                    const percent = (currentSongTime / duration) * 100;
+                    timeBar.value = percent;
+                    timeBar.style.background = thisMusic.setColor(percent);
+                }
+            }
+        };
+
+        volumeSlider.onmousemove = (e) => {
+            const percent = e.target.value;
+            currentSong.volume = percent / 100;
+            volumeSlider.style.background = thisMusic.setColor(percent);
+            thisMusic.setUserSettings("volume", currentSong.volume);
+            if (percent / 100 > 0 && thisMusic.settings.mute) {
+                thisMusic.muteSong();
+            }
+            if (percent == 0 && !thisMusic.settings.mute) {
+                thisMusic.muteSong();
             }
         };
 
@@ -207,8 +388,7 @@ const music = {
 
         timeBar.onmousemove = (e) => {
             const percent = e.target.value;
-            const color = `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
-            timeBar.style.background = color;
+            timeBar.style.background = thisMusic.setColor(percent);
         };
 
         // Change the time bar
@@ -222,20 +402,38 @@ const music = {
         };
 
         currentSong.onended = () => {
-            if (thisMusic.repeating) {
-                thisMusic.play();
+            const length = thisMusic.songs.length;
+            thisMusic.playingNumber++;
+            if (
+                (thisMusic.playingNumber >= 15 &&
+                    !thisMusic.settings.repeating) ||
+                (thisMusic.playingNumber === 10 * length &&
+                    thisMusic.settings.repeating) ||
+                (thisMusic.settings.currentSongIndex >= length - 1 &&
+                    !thisMusic.settings.repeating)
+            ) {
+                currentSong.pause();
             } else {
-                if (thisMusic.random) {
-                    thisMusic.randomSong();
-                } else {
-                    thisMusic.nextSong();
-                }
+                thisMusic.nextSong();
                 currentSong.play();
             }
+        };
+
+        songList.onclick = (e) => {
+            const clickedSongIndex =
+                e.target.getAttribute("song-index") ||
+                e.target.parentElement.getAttribute("song-index");
+            if (clickedSongIndex != thisMusic.settings.currentSongIndex) {
+                thisMusic.settings.currentSongIndex = clickedSongIndex;
+                thisMusic.loadSong();
+            }
+            currentSong.play();
         };
     },
 
     start: function () {
+        // Load settings
+        this.loadSettings();
         // Set the song for playing
         this.setSong();
         // Listening and handling events
