@@ -196,7 +196,7 @@ const music = {
     },
 
     setColor: function (percent) {
-        return `linear-gradient(90deg, #bd1b4b ${percent}%, #ccc  ${percent}%)`;
+        return `linear-gradient(90deg, #1383eb ${percent}%, #ccc  ${percent}%)`;
     },
 
     convertTime: function (time) {
@@ -268,11 +268,12 @@ const music = {
             currentSong.muted = true;
             volumeSlider.style.background = this.setColor(0);
         } else {
-            volumeSlider.value = this.settings.volume * 100;
+            volumeSlider.value =
+                this.settings.volume === 0 ? 50 : this.settings.volume * 100;
             currentSong.muted = false;
-            volumeSlider.style.background = this.setColor(
-                this.settings.volume * 100
-            );
+            currentSong.volume = volumeSlider.value / 100;
+            console.log(volumeSlider.value);
+            volumeSlider.style.background = this.setColor(volumeSlider.value);
         }
     },
 
@@ -281,7 +282,7 @@ const music = {
             `.song[song-index="${this.settings.currentSongIndex}"]`
         ).scrollIntoView({
             behavior: "smooth",
-            block: "start",
+            block: "center",
         });
     },
 
