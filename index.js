@@ -13,6 +13,7 @@ const timeBar = $("#time-bar");
 const durationTime = $("#duration-time");
 const volumeBtn = $("#volume-btn");
 const volumeSlider = $("#volume-slider");
+const sliders = $$(".slider");
 const songList = $("#song-list");
 const music = {
     playing: false,
@@ -313,6 +314,7 @@ const music = {
 
         // When click on play button
         playBtn.onclick = () => {
+            thisMusic.playing;
             if (thisMusic.playing) {
                 currentSong.pause();
             } else {
@@ -373,7 +375,17 @@ const music = {
             }
         };
 
-        volumeSlider.onmousemove = (e) => {
+        sliders.forEach((slider) => {
+            slider.oninput = (e) => {
+                if (e.target.id === "time-bar") {
+                    timeBar.setAttribute("clicked", "true");
+                }
+                const percent = e.target.value;
+                slider.style.background = thisMusic.setColor(percent);
+            };
+        });
+
+        volumeSlider.oninput = (e) => {
             const percent = e.target.value;
             currentSong.volume = percent / 100;
             volumeSlider.style.background = thisMusic.setColor(percent);
@@ -384,10 +396,6 @@ const music = {
             if (percent == 0 && !thisMusic.settings.mute) {
                 thisMusic.muteSong();
             }
-        };
-
-        timeBar.onmousedown = () => {
-            timeBar.setAttribute("clicked", "true");
         };
 
         timeBar.onmousemove = (e) => {
