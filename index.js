@@ -217,6 +217,10 @@ const music = {
             ".dashboard-cd"
         ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
         currentSong.src = this.dashboardSong.path;
+        this.setUserSettings(
+            "currentSongIndex",
+            this.settings.currentSongIndex
+        );
         setTimeout(() => {
             $(".song.playing-song").classList.remove("playing-song");
             $(
@@ -343,7 +347,7 @@ const music = {
                     currentSong.duration
                 );
             }
-            thisMusic.settings.playing = true;
+            thisMusic.playing = true;
             playBtn.classList.add("playing");
             cdRotate.play();
         };
@@ -424,7 +428,8 @@ const music = {
                 e.target.getAttribute("song-index") ||
                 e.target.parentElement.getAttribute("song-index");
             if (clickedSongIndex != thisMusic.settings.currentSongIndex) {
-                thisMusic.settings.currentSongIndex = clickedSongIndex;
+                thisMusic.settings.currentSongIndex =
+                    parseInt(clickedSongIndex);
                 thisMusic.loadSong();
             }
             currentSong.play();
