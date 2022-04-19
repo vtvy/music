@@ -171,7 +171,7 @@ const music = {
             $("#on-volume").classList.toggle("show", !this.settings.mute);
             $("#mute-volume").classList.toggle("show", this.settings.mute);
             volumeSlider.value = 0;
-            currentSong.mute = true;
+            currentSong.muted = true;
             volumeSlider.style.background = this.setColor(0);
         } else {
             volumeSlider.value = this.settings.volume * 100;
@@ -265,11 +265,11 @@ const music = {
         $("#mute-volume").classList.toggle("show", this.settings.mute);
         if (this.settings.mute) {
             volumeSlider.value = 0;
-            currentSong.mute = true;
+            currentSong.muted = true;
             volumeSlider.style.background = this.setColor(0);
         } else {
             volumeSlider.value = this.settings.volume * 100;
-            currentSong.mute = false;
+            currentSong.muted = false;
             volumeSlider.style.background = this.setColor(
                 this.settings.volume * 100
             );
