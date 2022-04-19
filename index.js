@@ -259,7 +259,7 @@ const music = {
 
     muteSong: function () {
         this.settings.mute = !this.settings.mute;
-        this.setUserSettings("settings.mute", this.settings.mute);
+        this.setUserSettings("mute", this.settings.mute);
         $("#on-volume").classList.toggle("show", !this.settings.mute);
         $("#mute-volume").classList.toggle("show", this.settings.mute);
         if (this.settings.mute) {
@@ -296,7 +296,7 @@ const music = {
         repeatBtn.onclick = () => {
             thisMusic.settings.repeating = !thisMusic.settings.repeating;
             thisMusic.setUserSettings(
-                "settings.repeating",
+                "repeating",
                 thisMusic.settings.repeating
             );
             repeatBtn.classList.toggle("active", thisMusic.settings.repeating);
@@ -413,7 +413,8 @@ const music = {
                     !thisMusic.settings.repeating) ||
                 (thisMusic.playingNumber === 10 * length &&
                     thisMusic.settings.repeating) ||
-                (thisMusic.settings.currentSongIndex >= length - 1 &&
+                ((thisMusic.settings.currentSongIndex >= length - 1 ||
+                    thisMusic.playingNumber >= length - 1) &&
                     !thisMusic.settings.repeating)
             ) {
                 currentSong.pause();
