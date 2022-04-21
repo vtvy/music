@@ -1,7 +1,6 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const cd = $("#cd");
 const repeatBtn = $("#repeat-btn");
 const prevBtn = $("#prev-btn");
 const playBtn = $("#play-button");
@@ -15,7 +14,7 @@ const volumeBtn = $("#volume-btn");
 const volumeSlider = $("#volume-slider");
 const sliders = $$(".slider");
 const songList = $("#song-list");
-const music = {
+const vmusic = {
     playing: false,
     playingNumber: 0,
     settings: JSON.parse(localStorage.getItem("settings")) || {},
@@ -176,6 +175,7 @@ const music = {
         } else {
             volumeSlider.value = this.settings.volume * 100;
             volumeSlider.style.background = this.setColor(volumeSlider.value);
+            currentSong.volume = this.settings.volume;
         }
 
         if (this.settings.repeating) {
@@ -272,7 +272,7 @@ const music = {
                 this.settings.volume === 0 ? 50 : this.settings.volume * 100;
             currentSong.muted = false;
             currentSong.volume = volumeSlider.value / 100;
-            console.log(volumeSlider.value);
+            this.setUserSettings("volume", currentSong.volume);
             volumeSlider.style.background = this.setColor(volumeSlider.value);
         }
     },
@@ -460,4 +460,4 @@ const music = {
     },
 };
 
-music.start();
+vmusic.start();
