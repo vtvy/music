@@ -11,7 +11,7 @@
 
 body {
     align-items: center;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--background-color);
     display: flex;
     justify-content: center;
     height: 100vh;
@@ -44,10 +44,10 @@ body {
 }
 
 .input-container {
-    height: 50px;
+    height: 3.125rem;
     position: relative;
     width: 100%;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
 }
 
 .input {
@@ -77,6 +77,11 @@ body {
 
 .cut-short {
     width: 3.125rem;
+}
+
+.warning {
+    color: #da2f2f;
+    padding-top: 1.25rem;
 }
 
 .input:focus ~ .cut,
@@ -109,7 +114,7 @@ body {
     color: #dc2f55;
 }
 
-.submit {
+#submit-btn {
     background-color: #08d;
     border-radius: 0.75rem;
     border: 0;
@@ -124,6 +129,6 @@ body {
     width: 100%;
 }
 
-.submit:active {
+#submit-btn:active {
     background-color: #06b;
 }

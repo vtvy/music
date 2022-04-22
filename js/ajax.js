@@ -1,4 +1,4 @@
-function ajax(data, option, url, callback) {
+function ajax(option, url, callback, data) {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function async() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
@@ -6,19 +6,36 @@ function ajax(data, option, url, callback) {
         }
     };
     xmlHttp.open(option, url, true);
-    xmlHttp.setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded"
-    );
-    xmlHttp.send(data);
+    if (option === "POST") {
+        xmlHttp.setRequestHeader(
+            "Content-type",
+            "application/x-www-form-urlencoded"
+        );
+        xmlHttp.send(data);
+    } else {
+        xmlHttp.send();
+    }
 }
-
 function signup(username, password) {
     let data = "username=" + username + "&password=" + password;
 
-    ajax(data, "POST", "./php-api/signup.php", (res) => {
+    ajax(
+        "POST",
+        "./php-api/signup.php",
+        (res) => {
+            res = JSON.parse(res);
+            console.log(res);
+        },
+        data
+    );
+}
+
+function login(username, password) {
+    let data = "username=" + username + "&password=" + password;
+
+    ajax("GET", `./php-api/login.php?${data}`, (res) => {
         console.log(res);
-        res = JSON.parse(res);
+        res = JSON.parse(res) || res;
         console.log(res);
     });
 }
