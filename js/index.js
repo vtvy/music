@@ -196,7 +196,7 @@ const vmusic = {
     },
 
     setColor: function (percent) {
-        return `linear-gradient(90deg, #1383eb ${percent}%, #ccc  ${percent}%)`;
+        return `linear-gradient(90deg, var(--main-color) ${percent}%, var(--secondary-color) ${percent}%)`;
     },
 
     convertTime: function (time) {
@@ -213,7 +213,7 @@ const vmusic = {
     },
 
     loadSong: function () {
-        $("#music-name").textContent = this.dashboardSong.name;
+        $("#db-music-name").textContent = this.dashboardSong.name;
         $(
             ".dashboard-cd"
         ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
@@ -223,6 +223,7 @@ const vmusic = {
             this.settings.currentSongIndex
         );
         setTimeout(() => {
+            durationTime.textContent = this.convertTime(currentSong.duration);
             $(".song.playing-song").classList.remove("playing-song");
             $(
                 `.song[song-index="${this.settings.currentSongIndex}"]`
@@ -282,7 +283,7 @@ const vmusic = {
             `.song[song-index="${this.settings.currentSongIndex}"]`
         ).scrollIntoView({
             behavior: "smooth",
-            block: "end",
+            block: "center",
         });
     },
 
@@ -345,11 +346,6 @@ const vmusic = {
         };
 
         currentSong.onplay = () => {
-            if (durationTime.textContent === "" && currentSong.duration) {
-                durationTime.textContent = thisMusic.convertTime(
-                    currentSong.duration
-                );
-            }
             thisMusic.playing = true;
             playBtn.classList.add("playing");
             cdRotate.play();

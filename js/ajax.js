@@ -1,4 +1,4 @@
-function ajax(option, url, callback, data) {
+function ajax(option, url, callback = () => {}, data) {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function async() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
@@ -55,13 +55,13 @@ function addSinger(
         if (res.status) {
             let singer = document.createElement("option");
             singer.textContent = singerName;
-            singer.value = selectSingers.lastElementChild.value || "1";
+            singer.value = selectSingers.lastElementChild.value++ || "1";
             selectSingers.add(singer);
             let aSinger = document.createElement("div");
             aSinger.classList.add("singer");
             aSinger.innerHTML = `
             <h4>${singerName}</h4>
-            <div class='update-delete-icon flex' editFor='-1' numberSong='-1'>
+            <div class='update-delete-icon flex' editFor='${lastIndex}' numberSong='0'>
                 <h5>0 songs</h5>
             </div>
             `;
@@ -97,11 +97,32 @@ function deleteSinger(singerId, element) {
             if (res.status) {
                 element.parentElement.outerHTML = "";
                 let singerOption = document.getElementById("song-singer");
-                for (var i = 0; i < singerOption.length; i++) {
+                for (let i = 0; i < singerOption.length; i++) {
                     if (singerOption.options[i].value === singerId)
                         singerOption.remove(i);
                 }
             }
         }
     );
+}
+
+function updateSong(songId, newSongName, element) {
+    ajax(
+        "GET",
+        `../php-api/update-song-name.php?id=${parseInt(
+            songId
+        )}&name=${newSongName}`,
+        (res) => {
+            res = JSON.parse(res);
+            if (res.status) {
+                element.innerHTML = newSongName;
+            } else {
+                element.innerHTML = e.firstChild.attributes["oldValue"].value;
+            }
+        }
+    );
+}
+
+function deleteSong(songId, element) {
+    ajax("GET", `../php-api/delete-song.php?id=${parseInt(songId)}`);
 }

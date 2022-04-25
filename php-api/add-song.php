@@ -3,7 +3,6 @@ require_once "../data/mysql-connection.php";
 
 
 if (($_FILES['song-file']['error'] == 0) &&
-    ($_FILES['song-file']['type'] == "audio/mpeg") &&
     ($_FILES["song-image"]["type"] == "image/jpeg") &&
     ($_FILES["song-image"]['error'] == 0)
 ) {

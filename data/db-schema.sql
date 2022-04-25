@@ -59,15 +59,16 @@ begin
 end; $$
 delimiter ;
 
--- procedure to sign in a account
+-- procedure to delete a songs
 delimiter $$
-create procedure sign_in(in username varchar(30))
+create procedure del_song(in s_id int)
 begin
-	if exists (select username from users where users.username = username)
+	if exists (select s.s_id FROM songs s where s.s_id = s_id)
 		then
-			select passwd as pass, UID as id from users where users.username = username;
+            select 1 as del, s.s_path, s.s_img_path FROM songs s where s.s_id = s_id;
+			DELETE FROM songs WHERE songs.s_id = s_id;
 		else	
-			select 0 as id;
+			select 0 as del;
 	end if;
 end; $$
 delimiter ;

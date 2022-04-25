@@ -20,7 +20,7 @@ if (!$result) {
     if ($row['del'] == 1) {
         $response = [
             "status" => true,
-            "message" => "uppdated success",
+            "message" => "delete success",
         ];
         echo json_encode($response);
     } else {
