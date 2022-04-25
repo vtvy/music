@@ -23,104 +23,8 @@ const vmusic = {
         this.settings[key] = value;
         localStorage.setItem("settings", JSON.stringify(this.settings));
     },
-    songs: [
-        {
-            name: "3107",
-            owner: "W/n, Duongg, Nâu",
-            path: "./assets/music/song1.mp3",
-            image: "./assets/images/image1.jpg",
-        },
-        {
-            name: "See tình",
-            owner: "Hoàng Thùy Linh",
-            path: "./assets/music/song2.mp3",
-            image: "./assets/images/image2.jpg",
-        },
-        {
-            name: "Muộn rồi mà sao còn",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song3.mp3",
-            image: "./assets/images/image3.jpg",
-        },
-        {
-            name: "Hãy trao cho anh",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song4.mp3",
-            image: "./assets/images/image4.jpg",
-        },
-        {
-            name: "Chạy ngay đi",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song5.mp3",
-            image: "./assets/images/image5.jpg",
-        },
-        {
-            name: "Chúng ta của hiện tại",
-            owner: "Khói",
-            path: "./assets/music/song6.m4a",
-            image: "./assets/images/image6.jpg",
-        },
-        {
-            name: "Là do em xui thôi",
-            owner: "Khói",
-            path: "./assets/music/song7.mp3",
-            image: "./assets/images/image7.jpg",
-        },
-        {
-            name: "Hai đám mây",
-            owner: "Khói",
-            path: "./assets/music/song8.mp3",
-            image: "./assets/images/image8.jpg",
-        },
-        {
-            name: "3107",
-            owner: "W/n, Duongg, Nâu",
-            path: "./assets/music/song1.mp3",
-            image: "./assets/images/image1.jpg",
-        },
-        {
-            name: "See tình",
-            owner: "Hoàng Thùy Linh",
-            path: "./assets/music/song2.mp3",
-            image: "./assets/images/image2.jpg",
-        },
-        {
-            name: "Muộn rồi mà sao còn",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song3.mp3",
-            image: "./assets/images/image3.jpg",
-        },
-        {
-            name: "Hãy trao cho anh",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song4.mp3",
-            image: "./assets/images/image4.jpg",
-        },
-        {
-            name: "Chạy ngay đi",
-            owner: "Sơn Tùng MTP",
-            path: "./assets/music/song5.mp3",
-            image: "./assets/images/image5.jpg",
-        },
-        {
-            name: "Chúng ta của hiện tại",
-            owner: "Khói",
-            path: "./assets/music/song6.m4a",
-            image: "./assets/images/image6.jpg",
-        },
-        {
-            name: "Là do em xui thôi",
-            owner: "Khói",
-            path: "./assets/music/song7.mp3",
-            image: "./assets/images/image7.jpg",
-        },
-        {
-            name: "Hai đám mây",
-            owner: "Khói",
-            path: "./assets/music/song8.mp3",
-            image: "./assets/images/image8.jpg",
-        },
-    ],
+
+    songs: [],
 
     // Show list of music
     showSongList: function () {
@@ -132,7 +36,10 @@ const vmusic = {
                     <div class="song-image" style="background-image: url('${
                         song.image
                     }')"></div>
-                    <div class="song-name">${song.name}</div>
+                    <div class="music-infor">
+                        <div  class="music-name">${song.name}</div>
+                        <div class="singer-name">${song.singerName}</div>
+                    </div>
                 </div>
             `;
         });
@@ -143,7 +50,8 @@ const vmusic = {
     loadSettings: function () {
         if (
             typeof this.settings.currentSongIndex !== "number" ||
-            isNaN(this.settings.currentSongIndex)
+            isNaN(this.settings.currentSongIndex) ||
+            this.settings.currentSongIndex > this.songs.length - 1
         ) {
             this.settings.currentSongIndex = 0;
         }
@@ -214,6 +122,7 @@ const vmusic = {
 
     loadSong: function () {
         $("#db-music-name").textContent = this.dashboardSong.name;
+        $("#db-singer-name").textContent = this.dashboardSong.singerName;
         $(
             ".dashboard-cd"
         ).style.backgroundImage = `url('${this.dashboardSong.image}')`;
@@ -443,16 +352,27 @@ const vmusic = {
     },
 
     start: function () {
-        // Load settings
-        this.loadSettings();
-        // Set the song for playing
-        this.setSong();
-        // Listening and handling events
-        this.handleEvents();
-        // Show song list
-        this.showSongList();
-        // Load song
-        this.loadSong();
+        thisMusic = this;
+        // Load all songs
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", "./php-api/get-songs.php", true);
+        xmlHttp.send();
+        xmlHttp.onreadystatechange = function async() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                let res = JSON.parse(this.responseText);
+                thisMusic.songs = res.data;
+                // Load settings
+                thisMusic.loadSettings();
+                // Set the song for playing
+                thisMusic.setSong();
+                // Listening and handling events
+                thisMusic.handleEvents();
+                // Show song list
+                thisMusic.showSongList();
+                // Load song
+                thisMusic.loadSong();
+            }
+        };
     },
 };
 

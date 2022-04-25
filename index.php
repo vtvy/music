@@ -13,7 +13,7 @@ require_once "./templates/header.php";
             </div>
             <div class="music-infor">
                 <div id="db-music-name" class="music-name"></div>
-                <div class="singer-name">asdasd</div>
+                <div id="db-singer-name" class="singer-name"></div>
             </div>
         </div>
         <div id="center-db">

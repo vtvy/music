@@ -26,8 +26,8 @@ create table songs(
 	s_id int auto_increment,
     singer_id int not null,
     s_name varchar(50) not null,
-    s_path varchar(50) not null,
-    s_img_path varchar(50) not null,
+    s_path varchar(100) not null,
+    s_img_path varchar(100) not null,
     createdAt datetime default CURRENT_TIMESTAMP,
     primary key(s_id),
     foreign key(singer_id) references singers(singer_id)

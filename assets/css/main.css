@@ -4,7 +4,7 @@
     --main-color: #f2ffff;
     --secondary-color: #7f889d;
     --active-color: #1383eb;
-    --hover-color: #ffffff26;
+    --hover-color: #ffffff11;
     --playing-color: #134deb;
     --text-color: #5c5c5c;
     --secondary-text-color: #ffffff;
@@ -97,7 +97,10 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    padding: 1rem;
+    width: 0.5rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 50%;
 }
 
 #volume-btn::before {
@@ -105,7 +108,12 @@ body {
     width: 10rem;
     height: 1.5rem;
     position: absolute;
-    bottom: 2rem;
+    color: rgba(106, 155, 196, 0.219);
+    bottom: 1rem;
+}
+
+#volume-btn:hover {
+    background-color: var(--hover-color);
 }
 
 #volume-btn:hover #volume-slider {
@@ -125,7 +133,7 @@ body {
     width: 8rem;
     position: absolute;
     display: none;
-    bottom: 2rem;
+    bottom: 1.5rem;
 }
 
 #volume-slider::-webkit-slider-thumb {
@@ -253,7 +261,7 @@ body {
 .song {
     display: flex;
     padding: 0.5rem;
-    border-top: var(--secondary-color) solid 0.0125rem;
+    border-top: #7f889d33 solid 0.025rem;
     font-size: 0.75rem;
 }
 

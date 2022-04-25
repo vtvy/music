@@ -7,16 +7,12 @@ function ajax(option, url, callback = () => {}, data) {
     };
     xmlHttp.open(option, url, true);
     if (option === "POST") {
-        // xmlHttp.setRequestHeader(
-        //     "Content-type",
-        //     "application/x-www-form-urlencoded"
-        // );
-        console.log(data);
         xmlHttp.send(data);
     } else {
         xmlHttp.send();
     }
 }
+
 function signup(username, password) {
     let data = "username=" + username + "&password=" + password;
 
