@@ -17,7 +17,6 @@ create table users (
 create table singers (
 	singer_id int auto_increment,
     singer_name varchar(30) not null unique,
-    passwd varchar(50) not null,
     createdAt datetime default CURRENT_TIMESTAMP,
     primary key(singer_id)
 );
@@ -27,7 +26,7 @@ create table songs(
 	s_id int auto_increment,
     singer_id int not null,
     s_name varchar(50) not null,
-    s_song_path varchar(50) not null,
+    s_path varchar(50) not null,
     s_img_path varchar(50) not null,
     createdAt datetime default CURRENT_TIMESTAMP,
     primary key(s_id),
@@ -45,36 +44,17 @@ create table playlists(
     foreign key(uid) references users(uid)
 );
 
--- create table to store posts were deleted
-create table songs_deleted(
-	s_id int not null,
-    singer_id int not null,
-    s_name varchar(50) not null,
-    s_song_path varchar(50) not null,
-    s_img_path varchar(50) not null,
-    createdAt datetime default CURRENT_TIMESTAMP
-);
-
--- trigger to store posts were deleted
-delimiter $$
-create trigger trigg_song_del
-after delete on songs for each row
-begin
-	insert into songs_deleted values(old.s_id, old.singer_id, old.s_name, old.s_song_path, old.s_img_path, now());
-end; $$
-delimiter ;
-
 ------------------------------------------------------------
--- procedure to sign up a account
+-- procedure to delete a singers
 delimiter $$
-create procedure sign_up(in username varchar(30), in passwd varchar(50))
+create procedure del_singer(in singer_id int)
 begin
-	if not exists (select username from users where users.username = username)
+	if not exists (select singer_id from songs where songs.singer_id = singer_id)
 		then
-			insert into users(username, passwd) values (username, passwd);
-			select UID as id from users where users.userName = userName;
+			DELETE FROM singers WHERE singers.singer_id = singer_id;
+			select 1 as del;
 		else	
-			select 0 as id;
+			select 0 as del;
 	end if;
 end; $$
 delimiter ;

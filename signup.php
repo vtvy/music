@@ -1,6 +1,6 @@
 <?php
 $page_title = "Sign up";
-$css = "./assets/css/sign";
+$css = "./assets/css/main";
 require_once "./templates/header.php";
 ?>
 <div class="form">
@@ -18,11 +18,12 @@ require_once "./templates/header.php";
         <label for="password" class="placeholder">password</label>
     </div>
     <div id="pass-warning"></div>
-    <button type="text" class="submit" type="submit" onclick="validate();">Sign Up</button>
+    <button type="text" class="submit" id="signup-submit-btn" type="submit">Sign Up</button>
 </div>
 <script src="./js/ajax.js"></script>
 <script>
-    function validate() {
+    document.getElementById("login-submit-btn").addEventListener("click", function validate(e) {
+        e.preventDefault();
         document.getElementById("user-warning").textContent = "";
         document.getElementById("pass-warning").textContent = "";
         let username = document.getElementById("username").value;
@@ -43,7 +44,7 @@ require_once "./templates/header.php";
             signup(username, password);
         }
 
-    }
+    });
 </script>
 <?php
 require_once './templates/footer.php'

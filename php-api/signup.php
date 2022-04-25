@@ -14,7 +14,7 @@ if (!$conn->query($query)) {
         "status" => false,
         "message" => "username or password is invalid"
     ];
-    echo $conn->error;
+    echo json_encode($response);
 } else {
     $response = [
         "status" => true,

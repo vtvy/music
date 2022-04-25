@@ -18,11 +18,11 @@ require_once "./templates/header.php";
         <label for="password" class="placeholder">password</label>
     </div>
     <div id="pass-warning" class="warning"></div>
-    <button type="text" id="submit-btn">Login</button>
+    <button type="text" id="login-submit-btn">Login</button>
 </form>
 <script src="./js/ajax.js?v=<?php echo time(); ?>"></script>
 <script>
-    document.getElementById("submit-btn").addEventListener("click", function validate(e) {
+    document.getElementById("login-submit-btn").addEventListener("click", function validate(e) {
         e.preventDefault();
         document.getElementById("user-warning").textContent = "";
         document.getElementById("pass-warning").textContent = "";

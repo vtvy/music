@@ -282,7 +282,7 @@ const vmusic = {
             `.song[song-index="${this.settings.currentSongIndex}"]`
         ).scrollIntoView({
             behavior: "smooth",
-            block: "center",
+            block: "end",
         });
     },
 
