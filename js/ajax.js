@@ -2,7 +2,7 @@ function ajax(option, url, callback = () => {}, data) {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function async() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-            callback(this.responseText);
+            callback(JSON.parse(this.responseText));
         }
     };
     xmlHttp.open(option, url, true);
@@ -20,7 +20,6 @@ function signup(username, password) {
         "POST",
         "./php-api/signup.php",
         (res) => {
-            res = JSON.parse(res);
             console.log(res);
         },
         data
@@ -32,7 +31,6 @@ function login(username, password) {
 
     ajax("GET", `./php-api/login.php?${data}`, (res) => {
         console.log(res);
-        res = JSON.parse(res);
         console.log(res);
     });
 }
@@ -47,7 +45,6 @@ function addSinger(
     let data = "singer-name=" + singerName;
     lastIndex++;
     ajax("GET", `../php-api/add-singer.php?${data}`, (res) => {
-        res = JSON.parse(res);
         if (res.status) {
             let singer = document.createElement("option");
             singer.textContent = singerName;
@@ -74,7 +71,6 @@ function updateSinger(singerId, singerName, e) {
         "GET",
         `../php-api/update-singer.php?id=${singerId}&name=${singerName}`,
         (res) => {
-            res = JSON.parse(res);
             if (res.status) {
                 e.innerHTML = `${singerName}`;
             } else {
@@ -89,7 +85,6 @@ function deleteSinger(singerId, element) {
         "GET",
         `../php-api/delete-singer.php?id=${parseInt(singerId)}`,
         (res) => {
-            res = JSON.parse(res);
             if (res.status) {
                 element.parentElement.outerHTML = "";
                 let singerOption = document.getElementById("song-singer");
@@ -109,7 +104,6 @@ function updateSong(songId, newSongName, element) {
             songId
         )}&name=${newSongName}`,
         (res) => {
-            res = JSON.parse(res);
             if (res.status) {
                 element.innerHTML = newSongName;
             } else {

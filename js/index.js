@@ -1,6 +1,12 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
+const sliders = $$(".slider");
+const songList = $("#song-list");
+const searchBar = $("#search-bar");
+const searchInput = $("#search-input");
+const searchBtn = $("#search-btn");
+const suggestList = $("#suggest-list");
 const repeatBtn = $("#repeat-btn");
 const prevBtn = $("#prev-btn");
 const playBtn = $("#play-button");
@@ -12,8 +18,7 @@ const timeBar = $("#time-bar");
 const durationTime = $("#duration-time");
 const volumeBtn = $("#volume-btn");
 const volumeSlider = $("#volume-slider");
-const sliders = $$(".slider");
-const songList = $("#song-list");
+
 const vmusic = {
     playing: false,
     playingNumber: 0,
@@ -25,6 +30,17 @@ const vmusic = {
     },
 
     songs: [],
+
+    ajax: function (url, callback = () => {}) {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function async() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                callback(JSON.parse(this.responseText));
+            }
+        };
+        xmlHttp.open("GET", url, true);
+        xmlHttp.send();
+    },
 
     // Show list of music
     showSongList: function () {
@@ -349,30 +365,61 @@ const vmusic = {
             }
             currentSong.play();
         };
+
+        // handle search
+        searchBtn.addEventListener("click", () => {
+            let kw = searchInput.value.trim();
+            if (kw) {
+                searchBar.firstElementChild.classList.add("searching");
+                suggestList.classList.add("show-element");
+                this.ajax(`./php-api/search-songs.php?kw=${kw}`, (res) => {
+                    console.log(res);
+                    const List = res.data.map((song) => {
+                        return `
+                            <div song-id="${song.songId}" class="song">
+                            <div class="song-image" style="background-image: url('${song.image}')"></div>
+                                <div class="music-infor">
+                                <div  class="music-name">${song.name}</div>
+                                <div class="singer-name">${song.singerName}</div>
+                                </div>
+                                </div>
+                                `;
+                    });
+                    suggestList.innerHTML = List.join("");
+                });
+            }
+        });
+
+        document.addEventListener("click", (e) => {
+            console.log();
+            if (!e.target.closest("#search-bar")) {
+                if (suggestList.classList.contains("show-element")) {
+                    suggestList.classList.remove("show-element");
+                }
+                if (
+                    searchBar.firstElementChild.classList.contains("searching")
+                ) {
+                    searchBar.firstElementChild.classList.remove("searching");
+                }
+            }
+        });
     },
 
     start: function () {
-        thisMusic = this;
         // Load all songs
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("GET", "./php-api/get-songs.php", true);
-        xmlHttp.send();
-        xmlHttp.onreadystatechange = function async() {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                let res = JSON.parse(this.responseText);
-                thisMusic.songs = res.data;
-                // Load settings
-                thisMusic.loadSettings();
-                // Set the song for playing
-                thisMusic.setSong();
-                // Listening and handling events
-                thisMusic.handleEvents();
-                // Show song list
-                thisMusic.showSongList();
-                // Load song
-                thisMusic.loadSong();
-            }
-        };
+        this.ajax("./php-api/get-songs.php", (res) => {
+            this.songs = res.data;
+            // Load settings
+            this.loadSettings();
+            // Set the song for playing
+            this.setSong();
+            // Listening and handling events
+            this.handleEvents();
+            // Show song list
+            this.showSongList();
+            // Load song
+            this.loadSong();
+        });
     },
 };
 

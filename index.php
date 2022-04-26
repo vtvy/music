@@ -4,8 +4,18 @@ $css = "./assets/css/main";
 require_once "./templates/header.php";
 ?>
 <div id="main">
+    <header id="header" class="flex">
+        <div id="left-nav">V MUSIC</div>
+        <div id="search-bar">
+            <div class="input-container flex ">
+                <input id="search-input" type="text" class="input" placeholder="Nhập tên bài hát" value="">
+                <button id="search-btn" class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div id="suggest-list" class=""></div>
+        </div>
+        <div id="user-bar">VeoCT</div>
+    </header>
     <div id="song-list"></div>
-    <div class="bo"></div>
     <div id="dashboard">
         <div id="left-db">
             <div id="cd">

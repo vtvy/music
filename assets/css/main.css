@@ -1,16 +1,15 @@
 :root {
-    --music-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-    --main-background-color: #101f3f;
+    --music-shadow: #0003 0px 2px 8px 0px;
+    --main-background-color: #1d375a;
+    --secondary-background-color: #192f60;
     --main-color: #f2ffff;
-    --secondary-color: #7f889d;
+    --secondary-color: #ffffff80;
     --active-color: #1383eb;
     --hover-color: #ffffff11;
     --playing-color: #134deb;
-    --text-color: #5c5c5c;
-    --secondary-text-color: #ffffff;
     --form-background-color: #15172b;
     --edit-color: #35577c;
-    --fixed-background-color: rgba(0, 0, 0, 0.2);
+    --fixed-background-color: #0003;
 }
 
 * {
@@ -22,6 +21,104 @@ body {
     color: var(--main-color);
     font-family: Verdana, Tahoma, sans-serif;
     font-weight: 700;
+}
+
+/* for classes */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.btn {
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    color: var(--main-color);
+    padding: 0.5rem;
+}
+
+.input-container {
+    height: 3rem;
+    position: relative;
+    width: 100%;
+    margin: 0.75rem 0;
+    border-radius: 0.5rem;
+    background-color: var(--hover-color);
+}
+
+.input {
+    border-radius: 0.75rem;
+    border: 0;
+    box-sizing: border-box;
+    outline: none;
+    padding: 0.5rem;
+    background-color: transparent;
+    width: 100%;
+    color: var(--main-color);
+}
+
+.show-element {
+    display: inline-block !important;
+}
+
+/* for id  */
+
+#header {
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--music-shadow);
+    padding: 0.5rem 1rem;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5rem;
+}
+
+#left-nav {
+    flex: 0.1;
+}
+
+#search-bar {
+    flex: 0.8;
+    margin: 0 2rem;
+    position: relative;
+    max-width: 50rem;
+}
+
+#search-bar .input-container {
+    margin: 0 auto;
+    height: 2.5rem;
+    justify-content: center;
+    border-radius: 1.5rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+}
+
+#search-bar .searching {
+    border-radius: 1.5rem 1.5rem 0 0;
+    background-color: var(--secondary-background-color);
+}
+
+#user-bar {
+    flex: 0.1;
+}
+
+#suggest-list {
+    background-color: var(--secondary-background-color);
+    position: absolute;
+    width: 100%;
+    border-radius: 0 0 1.5rem 1.5rem;
+    display: none;
+}
+
+#suggest-list .song:hover {
+    background-color: transparent;
 }
 
 #dashboard {
@@ -65,6 +162,7 @@ body {
 
 .singer-name {
     color: var(--secondary-color);
+    font-weight: 500;
 }
 
 .dashboard-cd {
@@ -107,8 +205,8 @@ body {
     content: "";
     width: 10rem;
     height: 1.5rem;
+    display: none;
     position: absolute;
-    color: rgba(106, 155, 196, 0.219);
     bottom: 1rem;
 }
 
@@ -116,12 +214,9 @@ body {
     background-color: var(--hover-color);
 }
 
-#volume-btn:hover #volume-slider {
-    display: inline-block;
-}
-
-#volume-btn .show {
-    display: inline-block;
+#volume-btn:hover #volume-slider,
+#volume-btn:hover::before {
+    display: block;
 }
 
 #mute-volume,
@@ -224,7 +319,8 @@ body {
 
 #song-list {
     width: 100%;
-    height: calc(100vmin - 5.25rem);
+    margin-top: 5rem;
+    height: calc(100vmin - 10.25rem);
     overflow-y: auto;
 }
 
@@ -266,11 +362,11 @@ body {
 }
 
 .song:hover {
-    background: var(--hover-color);
+    background-color: var(--hover-color);
 }
 
 .song.playing-song {
-    background: var(--hover-color);
+    background-color: var(--hover-color);
     opacity: 0.9;
 }
 .song-image {
@@ -320,25 +416,6 @@ body {
     font-weight: 600;
     margin-top: 1.125rem;
     padding-bottom: 1.125rem;
-}
-
-.input-container {
-    height: 3.125rem;
-    position: relative;
-    width: 100%;
-    margin-top: 1.5rem;
-}
-
-.input {
-    background-color: #303245;
-    border-radius: 0.5rem;
-    border: 0;
-    box-sizing: border-box;
-    font-size: 1.2rem;
-    height: 100%;
-    outline: 0;
-    padding: 0.75rem;
-    width: 100%;
 }
 
 .cut {
@@ -431,11 +508,6 @@ body {
 
 .flex {
     display: flex;
-}
-
-.flex-col {
-    display: flex;
-    flex-direction: column;
 }
 
 .update-delete-icon i {
