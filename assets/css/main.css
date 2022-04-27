@@ -6,10 +6,10 @@
     --secondary-color: #ffffff80;
     --active-color: #1383eb;
     --hover-color: #ffffff11;
-    --playing-color: #134deb;
     --form-background-color: #15172b;
     --edit-color: #35577c;
-    --fixed-background-color: #0003;
+    --dashboard-background-color: #0003;
+    --warning-color: #ff0000b2;
 }
 
 * {
@@ -33,12 +33,20 @@ body {
     flex-direction: column;
 }
 
+.space-between {
+    justify-content: space-between;
+}
+
 .btn {
     background-color: transparent;
     border: none;
     font-size: 1rem;
     color: var(--main-color);
     padding: 0.5rem;
+}
+
+.btn:hover {
+    color: var(--active-color);
 }
 
 .input-container {
@@ -61,8 +69,12 @@ body {
     color: var(--main-color);
 }
 
-.show-element {
-    display: inline-block !important;
+.hide-element {
+    display: none !important;
+}
+
+.btn.warning:hover {
+    color: var(--warning-color);
 }
 
 /* for id  */
@@ -114,7 +126,6 @@ body {
     position: absolute;
     width: 100%;
     border-radius: 0 0 1.5rem 1.5rem;
-    display: none;
 }
 
 #suggest-list .song:hover {
@@ -129,7 +140,7 @@ body {
     box-sizing: border-box;
     position: fixed;
     bottom: 0;
-    background-color: var(--fixed-background-color);
+    background-color: var(--dashboard-background-color);
     padding: 0.25rem 1rem;
 }
 
@@ -219,11 +230,6 @@ body {
     display: block;
 }
 
-#mute-volume,
-#on-volume {
-    display: none;
-}
-
 #volume-slider {
     width: 8rem;
     position: absolute;
@@ -253,21 +259,15 @@ body {
     font-size: 2.5rem;
 }
 
-.toggle-play {
-    display: flex;
-    justify-content: center;
-    align-content: center;
-}
-
-.toggle-play .pause-btn {
+#play-button .pause-btn {
     display: none;
 }
 
-.toggle-play.playing .pause-btn {
+#play-button.playing .pause-btn {
     display: inline-block;
 }
 
-.toggle-play.playing .play-btn {
+#play-button.playing .play-btn {
     display: none;
 }
 
@@ -315,6 +315,18 @@ body {
 
 #time-bar:hover::-moz-range-thumb {
     display: block;
+}
+
+#mute-volume {
+    display: none;
+}
+
+.mute #mute-volume {
+    display: inline;
+}
+
+.mute #on-volume {
+    display: none;
 }
 
 #song-list {
@@ -379,6 +391,10 @@ body {
     border: 0.125rem solid #fff;
 }
 
+.playing-song #del-fr-list {
+    display: none;
+}
+
 /* form page */
 
 .form-container {
@@ -432,10 +448,6 @@ body {
 
 .cut-short {
     width: 3.125rem;
-}
-
-.warning {
-    color: #ff0000b2;
 }
 
 .input:focus ~ .cut,

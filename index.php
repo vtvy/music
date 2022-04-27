@@ -9,9 +9,10 @@ require_once "./templates/header.php";
         <div id="search-bar">
             <div class="input-container flex ">
                 <input id="search-input" type="text" class="input" placeholder="Nhập tên bài hát" value="">
+                <button id="remove-kw-search" class="btn hide-element"><i class="fa-solid fa-circle-xmark"></i></button>
                 <button id="search-btn" class="btn"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
-            <div id="suggest-list" class=""></div>
+            <div id="suggest-list" class="hide-element"></div>
         </div>
         <div id="user-bar">VeoCT</div>
     </header>
@@ -36,7 +37,7 @@ require_once "./templates/header.php";
                     <div id="prev-btn" class="control-button">
                         <i class="fas fa-step-backward"></i>
                     </div>
-                    <div id="play-button" class="control-button toggle-play">
+                    <div id="play-button" class="control-button">
                         <i class="fa-solid fa-circle-pause pause-btn"></i>
                         <i class="fa-solid fa-circle-play play-btn"></i>
                     </div>
@@ -57,7 +58,7 @@ require_once "./templates/header.php";
         <div id="right-db">
             <div id="volume-btn">
                 <input type="range" id="volume-slider" class="slider" value="100" step="5" min="0" max="100" />
-                <i class="fa-solid fa-volume-high show" id="on-volume"></i>
+                <i class="fa-solid fa-volume-high" id="on-volume"></i>
                 <i class="fa-solid fa-volume-xmark" id="mute-volume"></i>
             </div>
         </div>

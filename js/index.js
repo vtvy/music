@@ -5,6 +5,7 @@ const sliders = $$(".slider");
 const songList = $("#song-list");
 const searchBar = $("#search-bar");
 const searchInput = $("#search-input");
+const removeInput = $("#remove-kw-search");
 const searchBtn = $("#search-btn");
 const suggestList = $("#suggest-list");
 const repeatBtn = $("#repeat-btn");
@@ -46,16 +47,19 @@ const vmusic = {
     showSongList: function () {
         const List = this.songs.map((song, index) => {
             return `
-                <div song-index="${index}" class="song ${
+                <div song-index="${index}" class="flex space-between song ${
                 index === this.settings.currentSongIndex ? "playing-song" : ""
             }">
-                    <div class="song-image" style="background-image: url('${
-                        song.image
-                    }')"></div>
-                    <div class="music-infor">
-                        <div  class="music-name">${song.name}</div>
-                        <div class="singer-name">${song.singerName}</div>
+                    <div class="flex">
+                        <div class="song-image" style="background-image: url('${
+                            song.image
+                        }')"></div>
+                        <div class="music-infor">
+                            <div  class="music-name">${song.name}</div>
+                            <div class="singer-name">${song.singerName}</div>
+                        </div>
                     </div>
+                    <button id="del-fr-list" class="btn warning"><i class='fa-solid fa-trash del'></i></button>
                 </div>
             `;
         });
@@ -187,8 +191,7 @@ const vmusic = {
     muteSong: function () {
         this.settings.mute = !this.settings.mute;
         this.setUserSettings("mute", this.settings.mute);
-        $("#on-volume").classList.toggle("show", !this.settings.mute);
-        $("#mute-volume").classList.toggle("show", this.settings.mute);
+        volumeBtn.classList.toggle("mute", this.settings.mute);
         if (this.settings.mute) {
             volumeSlider.value = 0;
             currentSong.muted = true;
@@ -366,14 +369,28 @@ const vmusic = {
             currentSong.play();
         };
 
+        // handle input to search
+        searchInput.addEventListener("input", (e) => {
+            let kw = e.target.value.trim();
+            if (!kw && !removeInput.classList.contains("hide-element")) {
+                removeInput.classList.add("hide-element");
+            } else {
+                removeInput.classList.remove("hide-element");
+            }
+        });
+
+        removeInput.addEventListener("click", () => {
+            searchInput.value = "";
+            removeInput.classList.add("hide-element");
+        });
+
         // handle search
         searchBtn.addEventListener("click", () => {
             let kw = searchInput.value.trim();
             if (kw) {
                 searchBar.firstElementChild.classList.add("searching");
-                suggestList.classList.add("show-element");
+                suggestList.classList.remove("hide-element");
                 this.ajax(`./php-api/search-songs.php?kw=${kw}`, (res) => {
-                    console.log(res);
                     const List = res.data.map((song) => {
                         return `
                             <div song-id="${song.songId}" class="song">
@@ -393,8 +410,8 @@ const vmusic = {
         document.addEventListener("click", (e) => {
             console.log();
             if (!e.target.closest("#search-bar")) {
-                if (suggestList.classList.contains("show-element")) {
-                    suggestList.classList.remove("show-element");
+                if (!suggestList.classList.contains("hide-element")) {
+                    suggestList.classList.add("hide-element");
                 }
                 if (
                     searchBar.firstElementChild.classList.contains("searching")
