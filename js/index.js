@@ -1,7 +1,6 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const sliders = $$(".slider");
 const songList = $("#song-list");
 const searchBar = $("#search-bar");
 const searchInput = $("#search-input");
@@ -59,7 +58,7 @@ const vmusic = {
                             <div class="singer-name">${song.singerName}</div>
                         </div>
                     </div>
-                    <button id="del-fr-list" class="btn warning"><i class='fa-solid fa-trash del'></i></button>
+                    <button class="btn warning del"><i class='fa-solid fa-trash'></i></button>
                 </div>
             `;
         });
@@ -300,16 +299,6 @@ const vmusic = {
             }
         };
 
-        sliders.forEach((slider) => {
-            slider.oninput = (e) => {
-                if (e.target.id === "time-bar") {
-                    timeBar.setAttribute("clicked", "true");
-                }
-                const percent = e.target.value;
-                slider.style.background = thisMusic.setColor(percent);
-            };
-        });
-
         volumeSlider.oninput = (e) => {
             const percent = e.target.value;
             currentSong.volume = percent / 100;
@@ -323,9 +312,10 @@ const vmusic = {
             }
         };
 
-        timeBar.onmousemove = (e) => {
+        timeBar.oninput = (e) => {
             const percent = e.target.value;
             timeBar.style.background = thisMusic.setColor(percent);
+            timeBar.setAttribute("clicked", "true");
         };
 
         // Change the time bar
@@ -357,17 +347,28 @@ const vmusic = {
             }
         };
 
-        songList.onclick = (e) => {
-            const clickedSongIndex =
-                e.target.getAttribute("song-index") ||
-                e.target.parentElement.getAttribute("song-index");
-            if (clickedSongIndex != thisMusic.settings.currentSongIndex) {
+        songList.addEventListener("click", (e) => {
+            const deleteClicked = e.target.closest(".del");
+            const songClicked = e.target.closest(".song:not(.playing-song)");
+            if (songClicked && !deleteClicked) {
+                let clickedSongIndex = songClicked.getAttribute("song-index");
                 thisMusic.settings.currentSongIndex =
                     parseInt(clickedSongIndex);
                 thisMusic.loadSong();
+                currentSong.play();
             }
-            currentSong.play();
-        };
+            if (deleteClicked) {
+                let clickedSongIndex =
+                    deleteClicked.parentElement.getAttribute("song-index");
+                if (clickedSongIndex < thisMusic.settings.currentSongIndex) {
+                    thisMusic.settings.currentSongIndex--;
+                }
+                thisMusic.songs = thisMusic.songs.filter(
+                    (song, index) => index != clickedSongIndex
+                );
+                thisMusic.showSongList();
+            }
+        });
 
         // handle input to search
         searchInput.addEventListener("input", (e) => {
@@ -393,22 +394,56 @@ const vmusic = {
                 this.ajax(`./php-api/search-songs.php?kw=${kw}`, (res) => {
                     const List = res.data.map((song) => {
                         return `
-                            <div song-id="${song.songId}" class="song">
-                            <div class="song-image" style="background-image: url('${song.image}')"></div>
-                                <div class="music-infor">
-                                <div  class="music-name">${song.name}</div>
-                                <div class="singer-name">${song.singerName}</div>
+                            <div song-id="${
+                                song.songId
+                            }" class="flex space-between song">
+                                <div class="flex">
+                                    <div class="song-image" style="background-image: url('${
+                                        song.image
+                                    }')"></div>
+                                    <div class="music-infor">
+                                        <div class="music-name">${
+                                            song.name
+                                        }</div>
+                                        <div class="singer-name">${
+                                            song.singerName
+                                        }</div>
+                                    </div>
                                 </div>
-                                </div>
-                                `;
+                                ${
+                                    thisMusic.songs.some(
+                                        (s) => s.songId === song.songId
+                                    )
+                                        ? ""
+                                        : '<button class="btn add"><i class="fa-solid fa-heart"></i></button>'
+                                }
+                            </div>
+                            `;
                     });
                     suggestList.innerHTML = List.join("");
                 });
             }
         });
 
+        // on click add music
+        suggestList.addEventListener("click", (e) => {
+            const addSongClicked = e.target.closest(".add");
+            if (addSongClicked) {
+                addSongClicked.classList.add("hide-element");
+                thisMusic.ajax(
+                    `./php-api/add-a-song.php?id=${addSongClicked.parentElement.getAttribute(
+                        "song-id"
+                    )}`,
+                    (res) => {
+                        const thisSong = res.data;
+                        thisMusic.songs.push(thisSong);
+                        thisMusic.showSongList();
+                    }
+                );
+            }
+        });
+
         document.addEventListener("click", (e) => {
-            console.log();
             if (!e.target.closest("#search-bar")) {
                 if (!suggestList.classList.contains("hide-element")) {
                     suggestList.classList.add("hide-element");
@@ -426,16 +461,20 @@ const vmusic = {
         // Load all songs
         this.ajax("./php-api/get-songs.php", (res) => {
             this.songs = res.data;
-            // Load settings
-            this.loadSettings();
-            // Set the song for playing
-            this.setSong();
-            // Listening and handling events
-            this.handleEvents();
-            // Show song list
-            this.showSongList();
-            // Load song
-            this.loadSong();
+            if (this.songs.length) {
+                // Load settings
+                this.loadSettings();
+                // Set the song for playing
+                this.setSong();
+                // Listening and handling events
+                this.handleEvents();
+                // Show song list
+                this.showSongList();
+                // Load song
+                this.loadSong();
+            } else {
+                location.href = "./login.php";
+            }
         });
     },
 };

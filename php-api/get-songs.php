@@ -3,8 +3,11 @@ header('Content-Type: application/json');
 
 require_once "../data/mysql-connection.php";
 
-$query = "SELECT s_id, s_name, s_path, s_img_path, singer_name 
-    FROM songs s JOIN singers sg ON s.singer_id = sg.singer_id;";
+// $id = $_SESSION["vmusic"];
+
+$query = "SELECT s.s_id, s_name, s_path, s_img_path, singer_name 
+    FROM songs s JOIN singers sg ON s.singer_id = sg.singer_id
+    JOIN playlists p ON s.s_id = p.s_id WHERE p.uid = 1;";
 
 
 $result = $conn->query($query);
