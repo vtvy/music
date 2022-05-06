@@ -1,14 +1,14 @@
 :root {
     --music-shadow: #0003 0px 2px 8px 0px;
-    --main-background-color: #1d375a;
-    --secondary-background-color: #192f60;
+    --main-background-color: #122c3f;
+    --secondary-background-color: #0c1d2a;
+    --playlist-background-color: #2f75a7;
     --main-color: #f2ffff;
     --secondary-color: #ffffff80;
     --active-color: #1383eb;
     --hover-color: #ffffff11;
     --form-background-color: #15172b;
     --edit-color: #35577c;
-    --dashboard-background-color: #0003;
     --warning-color: #ff0000b2;
 }
 
@@ -18,6 +18,7 @@
 
 body {
     background-color: var(--main-background-color);
+    background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
     color: var(--main-color);
     font-family: Verdana, Tahoma, sans-serif;
     font-weight: 700;
@@ -90,6 +91,8 @@ body {
     left: 0;
     right: 0;
     height: 5rem;
+    background-color: var(--main-background-color);
+    z-index: 1;
 }
 
 #left-nav {
@@ -141,8 +144,18 @@ body {
     box-sizing: border-box;
     position: fixed;
     bottom: 0;
-    background-color: var(--dashboard-background-color);
+    background-color: var(--secondary-background-color);
     padding: 0.25rem 1rem;
+    animation: showDashBar 0.5s ease forwards;
+}
+
+@keyframes showDashBar {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 #left-db {
@@ -220,10 +233,6 @@ body {
     display: none;
     position: absolute;
     bottom: 1rem;
-}
-
-#volume-btn:hover {
-    background-color: var(--hover-color);
 }
 
 #volume-btn:hover #volume-slider,
@@ -330,11 +339,41 @@ body {
     display: none;
 }
 
-#song-list {
+#content {
+    max-width: 60rem;
+    min-height: 55rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#all-song-list {
     width: 100%;
     margin-top: 5rem;
-    max-height: calc(100vmin - 10.25rem);
+    background-color: #23587d;
+}
+
+#playlist-container {
+    position: fixed;
+    right: 0;
+    margin-top: 5rem;
+    background-color: var(--playlist-background-color);
+    height: calc(100vh - 10.75rem);
+}
+
+#playlist {
+    max-height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    animation: showSideBar 0.5s ease forwards;
+}
+
+@keyframes showSideBar {
+    from {
+        width: 0;
+    }
+    to {
+        width: 25rem;
+    }
 }
 
 ::-webkit-slider-thumb {
@@ -358,11 +397,11 @@ body {
     border-radius: 50%;
 }
 
-#song-list::-webkit-scrollbar {
+#playlist::-webkit-scrollbar {
     width: 0.5rem;
 }
 
-#song-list::-webkit-scrollbar-thumb {
+#playlist::-webkit-scrollbar-thumb {
     border-radius: 0.5rem;
     background-color: var(--secondary-color);
 }

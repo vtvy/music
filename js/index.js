@@ -1,12 +1,13 @@
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
-const songList = $("#song-list");
+const playList = $("#playlist");
 const searchBar = $("#search-bar");
 const searchInput = $("#search-input");
 const removeInput = $("#remove-kw-search");
 const searchBtn = $("#search-btn");
 const suggestList = $("#suggest-list");
+const dashboard = $("#dashboard");
 const repeatBtn = $("#repeat-btn");
 const prevBtn = $("#prev-btn");
 const playBtn = $("#play-button");
@@ -18,10 +19,12 @@ const timeBar = $("#time-bar");
 const durationTime = $("#duration-time");
 const volumeBtn = $("#volume-btn");
 const volumeSlider = $("#volume-slider");
+const showPlayListBtn = $("#show-playlist");
+const playListContainer = $("#playlist-container");
+const allSongList = $("#all-song-list");
 
 const vmusic = {
     playing: false,
-    playingNumber: 0,
     settings: JSON.parse(localStorage.getItem("settings")) || {},
 
     setUserSettings: function (key, value) {
@@ -30,6 +33,8 @@ const vmusic = {
     },
 
     songs: [],
+
+    allSongs: [],
 
     ajax: function (url, callback = () => {}) {
         const xmlHttp = new XMLHttpRequest();
@@ -43,7 +48,7 @@ const vmusic = {
     },
 
     // Show list of music
-    showSongList: function () {
+    showPlayList: function () {
         const List = this.songs.map((song, index) => {
             return `
                 <div song-index="${index}" class="flex space-between song ${
@@ -63,7 +68,28 @@ const vmusic = {
             `;
         });
 
-        songList.innerHTML = List.join("");
+        playList.innerHTML = List.join("");
+    },
+
+    showAllSongs: function () {
+        this.ajax("./php-api/get-all-songs.php", (res) => {
+            this.allSongs = res.data;
+            var List = this.allSongs.map((song, index) => {
+                return `
+                <div song-index="${index}" class="flex space-between song">
+                    <div class="flex">
+                        <div class="song-image" style="background-image: url('${song.image}')"></div>
+                        <div class="music-infor">
+                            <div  class="music-name">${song.name}</div>
+                            <div class="singer-name">${song.singerName}</div>
+                        </div>
+                    </div>
+                    <button class="btn warning del"><i class='fa-solid fa-trash'></i></button>
+                </div>
+            `;
+            });
+            allSongList.innerHTML = List.join("");
+        });
     },
 
     loadSettings: function () {
@@ -72,28 +98,35 @@ const vmusic = {
             isNaN(this.settings.currentSongIndex) ||
             this.settings.currentSongIndex > this.songs.length - 1
         ) {
-            this.settings.currentSongIndex = 0;
+            this.setUserSettings("currentSongIndex", 0);
         }
 
         if (!(this.settings.volume >= 0 && this.settings.volume <= 1)) {
-            this.settings.volume = 1;
+            this.setUserSettings("volume", 1);
         }
 
         if (typeof this.settings.mute !== "boolean") {
-            this.settings.mute = false;
+            this.setUserSettings("mute", false);
         }
 
         if (typeof this.settings.random !== "boolean") {
-            this.settings.random = false;
+            this.setUserSettings("ramdom", false);
         }
 
         if (typeof this.settings.repeating !== "boolean") {
             this.setUserSettings("repeating", false);
         }
 
-        // Set the default UI for user settings
+        if (
+            typeof this.settings.time !== "number" ||
+            this.settings.time < 0 ||
+            this.settings.time > 100
+        ) {
+            this.setUserSettings("time", 0);
+        }
 
         if (this.settings.mute) {
+            // Set the default UI for user settings
             $("#on-volume").classList.toggle("show", !this.settings.mute);
             $("#mute-volume").classList.toggle("show", this.settings.mute);
             volumeSlider.value = 0;
@@ -105,6 +138,9 @@ const vmusic = {
             currentSong.volume = this.settings.volume;
         }
 
+        if (currentSong.duration) {
+        }
+
         if (this.settings.repeating) {
             repeatBtn.classList.toggle("active", this.settings.repeating);
         }
@@ -112,6 +148,19 @@ const vmusic = {
         if (this.settings.random) {
             randomBtn.classList.toggle("active", this.settings.random);
         }
+    },
+
+    // load settings for last time playing song
+    loadLastTimePlaying: function () {
+        setTimeout(() => {
+            var duration;
+            duration = currentSong.duration;
+            if (duration) {
+                timeBar.style.background = this.setColor(this.settings.time);
+                currentSong.currentTime =
+                    (currentSong.duration / 100) * this.settings.time;
+            }
+        }, 100);
     },
 
     setSong: function () {
@@ -150,11 +199,12 @@ const vmusic = {
             "currentSongIndex",
             this.settings.currentSongIndex
         );
+
         setTimeout(() => {
             durationTime.textContent = this.convertTime(currentSong.duration);
-            $(".song.playing-song").classList.remove("playing-song");
+            $("#playlist .song.playing-song").classList.remove("playing-song");
             $(
-                `.song[song-index="${this.settings.currentSongIndex}"]`
+                `#playlist .song[song-index="${this.settings.currentSongIndex}"]`
             ).classList.add("playing-song");
             this.scrollIntoView();
         }, 200);
@@ -207,11 +257,27 @@ const vmusic = {
 
     scrollIntoView: function () {
         $(
-            `.song[song-index="${this.settings.currentSongIndex}"]`
+            `#playlist .song[song-index="${this.settings.currentSongIndex}"]`
         ).scrollIntoView({
             behavior: "smooth",
             block: "center",
         });
+    },
+
+    addNewSong: function (newSong) {
+        const notShowDashboard = dashboard.classList.contains("hide-element");
+        const isShowPlayList =
+            !playListContainer.classList.contains("hide-element");
+        this.songs.push(newSong);
+        if (isShowPlayList) {
+            this.showPlayList();
+        }
+
+        if (notShowDashboard) {
+            this.setSong();
+            this.loadSong();
+            dashboard.classList.remove("hide-element");
+        }
     },
 
     // Listening and handling function declare
@@ -289,10 +355,14 @@ const vmusic = {
             const duration = currentSong.duration;
             if (duration) {
                 const currentSongTime = currentSong.currentTime;
+                const percent = (currentSongTime / duration) * 100;
+                const each1Pecent = parseInt(percent * 10) % 10 == 0;
+                if (each1Pecent) {
+                    thisMusic.setUserSettings("time", percent);
+                }
                 currentTime.textContent =
                     thisMusic.convertTime(currentSongTime);
                 if (timeBar.getAttribute("clicked") !== "true") {
-                    const percent = (currentSongTime / duration) * 100;
                     timeBar.value = percent;
                     timeBar.style.background = thisMusic.setColor(percent);
                 }
@@ -304,13 +374,30 @@ const vmusic = {
             currentSong.volume = percent / 100;
             volumeSlider.style.background = thisMusic.setColor(percent);
             thisMusic.setUserSettings("volume", currentSong.volume);
-            if (percent / 100 > 0 && thisMusic.settings.mute) {
-                thisMusic.muteSong();
-            }
-            if (percent == 0 && !thisMusic.settings.mute) {
+            if (
+                (percent > 0 && thisMusic.settings.mute) ||
+                (percent == 0 && !thisMusic.settings.mute)
+            ) {
                 thisMusic.muteSong();
             }
         };
+
+        volumeSlider.addEventListener("wheel", (e) => {
+            let changeValue = parseInt(e.deltaY * -0.05);
+            let percent = Math.floor(currentSong.volume * 100 + changeValue);
+            if (percent >= 0 && percent <= 100) {
+                currentSong.volume = percent / 100;
+                volumeSlider.style.background = thisMusic.setColor(percent);
+                thisMusic.setUserSettings("volume", currentSong.volume);
+                volumeSlider.value = percent;
+                if (
+                    (percent > 0 && thisMusic.settings.mute) ||
+                    (percent == 0 && !thisMusic.settings.mute)
+                ) {
+                    thisMusic.muteSong();
+                }
+            }
+        });
 
         timeBar.oninput = (e) => {
             const percent = e.target.value;
@@ -330,24 +417,11 @@ const vmusic = {
 
         currentSong.onended = () => {
             const length = thisMusic.songs.length;
-            thisMusic.playingNumber++;
-            if (
-                (thisMusic.playingNumber >= 15 &&
-                    !thisMusic.settings.repeating) ||
-                (thisMusic.playingNumber === 10 * length &&
-                    thisMusic.settings.repeating) ||
-                ((thisMusic.settings.currentSongIndex >= length - 1 ||
-                    thisMusic.playingNumber >= length - 1) &&
-                    !thisMusic.settings.repeating)
-            ) {
-                currentSong.pause();
-            } else {
-                thisMusic.nextSong();
-                currentSong.play();
-            }
+            thisMusic.nextSong();
+            currentSong.play();
         };
 
-        songList.addEventListener("click", (e) => {
+        playList.addEventListener("click", (e) => {
             const deleteClicked = e.target.closest(".del");
             const songClicked = e.target.closest(".song:not(.playing-song)");
             if (songClicked && !deleteClicked) {
@@ -360,13 +434,24 @@ const vmusic = {
             if (deleteClicked) {
                 let clickedSongIndex =
                     deleteClicked.parentElement.getAttribute("song-index");
+                const songId = thisMusic.songs[clickedSongIndex].songId;
                 if (clickedSongIndex < thisMusic.settings.currentSongIndex) {
                     thisMusic.settings.currentSongIndex--;
                 }
-                thisMusic.songs = thisMusic.songs.filter(
-                    (song, index) => index != clickedSongIndex
+                deleteClicked.classList.add("hide-element");
+                thisMusic.ajax(
+                    `./php-api/delete-playlist-song.php?id=${songId}`,
+                    (res) => {
+                        if (res.status) {
+                            thisMusic.songs = thisMusic.songs.filter(
+                                (song, index) => index != clickedSongIndex
+                            );
+                            thisMusic.showPlayList();
+                        } else {
+                            deleteClicked.classList.remove("hide-element");
+                        }
+                    }
                 );
-                thisMusic.showSongList();
             }
         });
 
@@ -375,24 +460,25 @@ const vmusic = {
             let kw = e.target.value.trim();
             if (!kw && !removeInput.classList.contains("hide-element")) {
                 removeInput.classList.add("hide-element");
-            } else {
-                removeInput.classList.remove("hide-element");
             }
-        });
 
-        removeInput.addEventListener("click", () => {
-            searchInput.value = "";
-            removeInput.classList.add("hide-element");
-        });
-
-        // handle search
-        searchBtn.addEventListener("click", () => {
-            let kw = searchInput.value.trim();
             if (kw) {
-                searchBar.firstElementChild.classList.add("searching");
+                removeInput.classList.remove("hide-element");
                 suggestList.classList.remove("hide-element");
                 this.ajax(`./php-api/search-songs.php?kw=${kw}`, (res) => {
-                    const List = res.data.map((song) => {
+                    const newSuggestList = res.data;
+                    searchBar.firstElementChild.classList.add("searching");
+                    if (
+                        !newSuggestList.length &&
+                        searchBar.firstElementChild.classList.contains(
+                            "searching"
+                        )
+                    ) {
+                        searchBar.firstElementChild.classList.remove(
+                            "searching"
+                        );
+                    }
+                    const List = newSuggestList.map((song) => {
                         return `
                             <div song-id="${
                                 song.songId
@@ -425,6 +511,18 @@ const vmusic = {
             }
         });
 
+        removeInput.addEventListener("click", () => {
+            searchInput.value = "";
+            removeInput.classList.add("hide-element");
+        });
+
+        // handle search
+        searchBtn.addEventListener("click", () => {
+            let kw = searchInput.value.trim();
+            if (kw) {
+            }
+        });
+
         // on click add music
         suggestList.addEventListener("click", (e) => {
             const addSongClicked = e.target.closest(".add");
@@ -436,8 +534,7 @@ const vmusic = {
                     )}`,
                     (res) => {
                         const thisSong = res.data;
-                        thisMusic.songs.push(thisSong);
-                        thisMusic.showSongList();
+                        thisMusic.addNewSong(thisSong);
                     }
                 );
             }
@@ -455,26 +552,45 @@ const vmusic = {
                 }
             }
         });
+
+        // show or hide playlists
+        showPlayListBtn.addEventListener("click", () => {
+            if (playListContainer.classList.contains("hide-element")) {
+                playListContainer.classList.remove("hide-element");
+                thisMusic.showPlayList();
+            } else {
+                playListContainer.classList.add("hide-element");
+            }
+        });
     },
 
     start: function () {
-        // Load all songs
+        // Load all songs of playlists
         this.ajax("./php-api/get-songs.php", (res) => {
             this.songs = res.data;
+            // Call all methods of vmusic object
             if (this.songs.length) {
+                // Show dashboard if it is hiden
+                if (dashboard.classList.contains("hide-element")) {
+                    dashboard.classList.remove("hide-element");
+                }
                 // Load settings
                 this.loadSettings();
                 // Set the song for playing
                 this.setSong();
-                // Listening and handling events
-                this.handleEvents();
                 // Show song list
-                this.showSongList();
+                this.showPlayList();
                 // Load song
                 this.loadSong();
+                // Load last time playing song
+                this.loadLastTimePlaying();
             } else {
-                location.href = "./login.php";
+                dashboard.classList.add("hide-element");
             }
+            // Listening and handling events
+            this.handleEvents();
+            // Load all songs of vmusic website
+            this.showAllSongs();
         });
     },
 };

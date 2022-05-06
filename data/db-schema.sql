@@ -64,14 +64,28 @@ begin
 end; $$
 delimiter ;
 
--- procedure to delete a songs
+-- procedure to delete a song
 delimiter $$
 create procedure del_song(in s_id int)
 begin
 	if exists (select s.s_id FROM songs s where s.s_id = s_id)
 		then
-            select 1 as del, s.s_path, s.s_img_path FROM songs s where s.s_id = s_id;
 			DELETE FROM songs WHERE songs.s_id = s_id;
+            select 1 as del;
+		else	
+			select 0 as del;
+	end if;
+end; $$
+delimiter ;
+
+-- procedure to delete a playlist song
+delimiter $$
+create procedure del_playlist_song(in s_id int, in uid int)
+begin
+	if exists (select s_id FROM playlists p WHERE p.s_id = s_id AND p.uid = uid)
+		then
+			DELETE FROM playlists WHERE playlists.s_id = s_id AND playlists.uid = uid;
+            select 1 as del;
 		else	
 			select 0 as del;
 	end if;

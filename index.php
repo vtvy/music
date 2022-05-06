@@ -16,7 +16,15 @@ require_once "./templates/header.php";
         </div>
         <div id="user-bar">VeoCT</div>
     </header>
-    <div id="song-list"></div>
+    <div id="content" class="flex">
+        <div id="all-song-list">
+        </div>
+        <!-- class="hide-element" -->
+        <div id="playlist-container">
+            <div id="playlist"></div>
+        </div>
+    </div>
+
     <div id="dashboard">
         <div id="left-db">
             <div id="cd">
@@ -55,12 +63,13 @@ require_once "./templates/header.php";
                 <div id="duration-time" class="time">00:00</div>
             </div>
         </div>
-        <div id="right-db">
+        <div id="right-db" class="flex">
             <div id="volume-btn">
                 <input type="range" id="volume-slider" class="slider" value="100" step="5" min="0" max="100" />
                 <i class="fa-solid fa-volume-high" id="on-volume"></i>
                 <i class="fa-solid fa-volume-xmark" id="mute-volume"></i>
             </div>
+            <button class="btn" id="show-playlist"><i class="fa-solid fa-list-ol"></i></button>
         </div>
         <audio id="current-song" src=""></audio>
     </div>
