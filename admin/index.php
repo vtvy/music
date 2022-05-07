@@ -1,4 +1,9 @@
 <?php
+session_start();
+if (!isset($_SESSION['vmusic']) || $_SESSION["vmusic"] != 1) {
+    header('Location: ./');
+}
+
 $page_title = "Admin page";
 $css = "../assets/css/main";
 require_once "../templates/header.php";
@@ -44,7 +49,7 @@ require_once "../templates/header.php";
                 <label for="song-file" class="placeholder">singer</label>
             </div>
             <div id="select-warning" class="warning"></div>
-            <button type="text" class="submit" id="song-submit-btn">Add a song</button>
+            <button type="text" class="submit-btn" id="song-submit-btn">Add a song</button>
         </form>
         <div id="edit-song-list">
             <?php require_once "../data/mysql-connection.php";
@@ -58,7 +63,7 @@ require_once "../templates/header.php";
                     "<div class='edit-song'>
                         <h4>$row[s_name]</h4>
                         <div class='update-delete-icon flex' editFor='$row[s_id]'>
-                            <h5 class='active'>$row[singer_name]</h5>
+                            <h5>$row[singer_name]</h5>
                             <i class='fa-solid fa-pen-to-square edit'></i>
                             <i class='fa-solid fa-trash warning del'></i>
                         </div>
@@ -77,7 +82,7 @@ require_once "../templates/header.php";
                 <label for="singer-name" class="placeholder">singer</label>
             </div>
             <div id="singer-warning" class="warning"></div>
-            <button type="text" id="singer-submit-btn" type="button" class="submit">Add new singer</button>
+            <button type="text" id="singer-submit-btn" type="button" class="submit-btn">Add new singer</button>
         </form>
         <div id="singer-list">
             <?php require_once "../data/mysql-connection.php";
@@ -181,9 +186,9 @@ require_once "../templates/header.php";
     function updateSingerName(e, singerId) {
         let newSingerName = e.firstChild.value.trim();
         let singerName = e.firstChild.attributes['oldValue'].value;
-
+        let selectSingers = document.getElementById("song-singer");
         if (newSingerName !== singerName && newSingerName) {
-            updateSinger(singerId, newSingerName, e);
+            updateSinger(singerId, newSingerName, e, selectSingers);
         } else {
             e.innerHTML = `${singerName}`;
         }

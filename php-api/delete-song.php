@@ -14,6 +14,8 @@ if (!$result) {
         "status" => false,
         "message" => "some thing went wrong",
     ];
+
+    echo $conn->error;
     echo json_encode($response);
 } else {
     $row = $result->fetch_assoc();

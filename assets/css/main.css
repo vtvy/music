@@ -7,21 +7,32 @@
     --secondary-color: #ffffff80;
     --active-color: #1383eb;
     --hover-color: #ffffff11;
-    --form-background-color: #15172b;
+    --form-background-color: #1d445f;
     --edit-color: #35577c;
-    --warning-color: #ff0000b2;
-}
-
-* {
-    margin: 0;
+    --warning-color: #a70707;
 }
 
 body {
+    margin-top: 0;
     background-color: var(--main-background-color);
     background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
     color: var(--main-color);
     font-family: Verdana, Tahoma, sans-serif;
     font-weight: 700;
+}
+
+a {
+    color: rgb(189, 108, 43);
+}
+
+option {
+    background-color: var(--playlist-background-color);
+}
+
+/* for scrollbar */
+
+::-webkit-scrollbar {
+    width: 0;
 }
 
 /* for classes */
@@ -48,6 +59,7 @@ body {
 
 .btn:hover {
     color: var(--active-color);
+    cursor: pointer;
 }
 
 .input-container {
@@ -59,12 +71,17 @@ body {
     background-color: var(--hover-color);
 }
 
+.sign-form .input-container {
+    margin: 1.75rem 0;
+}
+
 .input {
     border-radius: 0.75rem;
     border: 0;
     box-sizing: border-box;
     outline: none;
-    padding: 0.5rem;
+    padding: 1rem;
+
     background-color: transparent;
     width: 100%;
     color: var(--main-color);
@@ -75,6 +92,11 @@ body {
 }
 
 .btn.warning:hover {
+    color: var(--warning-color);
+}
+
+.form .warning,
+.sign-form .warning {
     color: var(--warning-color);
 }
 
@@ -120,8 +142,12 @@ body {
     background-color: var(--secondary-background-color);
 }
 
-#user-bar {
-    flex: 0.1;
+#user-bar .btn {
+    background-color: var(--playlist-background-color);
+}
+
+#user-bar .btn:hover {
+    background-color: var(--edit-color);
 }
 
 #suggest-list {
@@ -144,6 +170,8 @@ body {
     box-sizing: border-box;
     position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     background-color: var(--secondary-background-color);
     padding: 0.25rem 1rem;
     animation: showDashBar 0.5s ease forwards;
@@ -182,7 +210,7 @@ body {
 .music-name,
 .singer-name {
     font-size: 0.75rem;
-    width: 10rem;
+    width: 14rem;
 }
 
 .singer-name {
@@ -340,7 +368,6 @@ body {
 }
 
 #content {
-    max-width: 60rem;
     min-height: 55rem;
     margin-left: auto;
     margin-right: auto;
@@ -348,13 +375,15 @@ body {
 
 #all-song-list {
     width: 100%;
+    position: relative;
     margin-top: 5rem;
     background-color: #23587d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #playlist-container {
-    position: fixed;
-    right: 0;
     margin-top: 5rem;
     background-color: var(--playlist-background-color);
     height: calc(100vh - 10.75rem);
@@ -387,8 +416,6 @@ body {
 }
 
 ::-moz-range-thumb {
-    width: 1rem;
-    height: 1rem;
     background: var(--active-color);
     appearance: none;
     width: 1.5rem;
@@ -408,9 +435,11 @@ body {
 
 .song {
     display: flex;
-    padding: 0.5rem;
-    border-top: #7f889d33 solid 0.025rem;
+    padding: 0.5rem 1rem;
+    border-bottom: #7f889d33 solid 0.025rem;
     font-size: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .song:hover {
@@ -448,7 +477,7 @@ body {
 }
 
 .form {
-    background-color: #15172b;
+    background-color: var(--form-background-color);
     border-radius: 1.25rem;
     box-sizing: border-box;
     height: 31.25rem;
@@ -456,6 +485,13 @@ body {
     margin: 0 1rem;
     min-width: 22.25rem;
     color: var(--secondary-text-color);
+}
+
+.sign-form {
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }
 
 .title {
@@ -513,14 +549,14 @@ body {
 }
 
 .input:not(:placeholder-shown) ~ .placeholder {
-    color: #808097;
+    color: var(--secondary-text-color);
 }
 
 .input:focus ~ .placeholder {
-    color: #dc2f55;
+    color: var(--warning-color);
 }
 
-#submit-btn {
+.submit-btn {
     background-color: #08d;
     border-radius: 0.75rem;
     border: 0;
@@ -535,7 +571,11 @@ body {
     width: 100%;
 }
 
-#submit-btn:active {
+.switch-form {
+    margin-top: 1rem;
+}
+
+.submit-btn:active {
     background-color: #06b;
 }
 
@@ -578,4 +618,90 @@ body {
     font-size: 1rem;
     padding: 0 0.5rem;
     border: 0.125rem solid;
+}
+
+/* for pagination */
+#pagination {
+    position: absolute;
+    bottom: 6rem;
+    display: flex;
+    flex-direction: row;
+    --food-size: 0.75rem;
+    --pm-mouth-size: 1rem;
+    --pacman-zise: calc(var(--pm-mouth-size) * 2);
+    --pm-color: #eeee00;
+}
+
+#pagination label {
+    content: "";
+    margin: 0 0.625rem;
+    height: var(--food-size);
+    width: var(--food-size);
+    background: #fd92cd;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: var(--music-shadow);
+}
+
+#pagination label:first-child {
+    margin-left: 0;
+}
+label:last-child {
+    margin-right: 0;
+}
+
+#pagination input {
+    display: none;
+}
+
+#pacman {
+    content: "";
+    position: absolute;
+    top: calc(-1 * var(--food-size));
+    left: calc(-1 * var(--food-size) / 2);
+    height: var(--pacman-zise);
+    width: var(--pacman-zise);
+    transition: transform 250ms linear;
+}
+
+#pacman:before,
+#pacman:after {
+    content: "";
+    position: absolute;
+    height: var(--pm-mouth-size);
+    width: var(--pacman-zise);
+    left: 0;
+    background: var(--pm-color);
+    transition: inherit;
+}
+
+#pacman:before {
+    top: 0;
+    border-top-left-radius: var(--pacman-zise);
+    border-top-right-radius: var(--pacman-zise);
+    transform-origin: bottom center;
+    transform: rotate(-45deg);
+}
+
+#pacman:after {
+    bottom: 0;
+    border-bottom-left-radius: var(--pacman-zise);
+    border-bottom-right-radius: var(--pacman-zise);
+    transform-origin: top center;
+    transform: rotate(45deg);
+}
+
+#pagination input[type="radio"]:hover ~ #pacman:before,
+#pagination input[type="radio"]:hover ~ #pacman:after {
+    animation: eat 500ms infinite;
+}
+
+@keyframes eat {
+    0% {
+    }
+    50% {
+        transform: rotate(0);
+    }
+    100% {
+    }
 }

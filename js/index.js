@@ -43,6 +43,7 @@ const vmusic = {
                 callback(JSON.parse(this.responseText));
             }
         };
+
         xmlHttp.open("GET", url, true);
         xmlHttp.send();
     },
@@ -51,7 +52,7 @@ const vmusic = {
     showPlayList: function () {
         const List = this.songs.map((song, index) => {
             return `
-                <div song-index="${index}" class="flex space-between song ${
+                <div song-index="${index}" class="space-between song ${
                 index === this.settings.currentSongIndex ? "playing-song" : ""
             }">
                     <div class="flex">
@@ -71,24 +72,64 @@ const vmusic = {
         playList.innerHTML = List.join("");
     },
 
-    showAllSongs: function () {
-        this.ajax("./php-api/get-all-songs.php", (res) => {
+    showAllSongs: function (page = 1) {
+        this.ajax(`./php-api/songlist-paging.php?page=${page}`, (res) => {
             this.allSongs = res.data;
             var List = this.allSongs.map((song, index) => {
                 return `
-                <div song-index="${index}" class="flex space-between song">
+                <div song-id="${song.songId}" class="space-between song">
                     <div class="flex">
-                        <div class="song-image" style="background-image: url('${song.image}')"></div>
+                        <div class="song-image" style="background-image: url('${
+                            song.image
+                        }')"></div>
                         <div class="music-infor">
-                            <div  class="music-name">${song.name}</div>
+                            <div class="music-name">${song.name}</div>
                             <div class="singer-name">${song.singerName}</div>
                         </div>
                     </div>
-                    <button class="btn warning del"><i class='fa-solid fa-trash'></i></button>
+                    ${
+                        this.songs.some((s) => s.songId === song.songId)
+                            ? ""
+                            : '<button class="btn add"><i class="fa-solid fa-heart"></i></button>'
+                    }
                 </div>
             `;
             });
-            allSongList.innerHTML = List.join("");
+
+            var songListElement = List.join("");
+            if (res.pageTotal > 1) {
+                let pages = Array(res.pageTotal)
+                    .fill("")
+                    .map((dot, index) => {
+                        let pageNumber = index + 1;
+                        if (index != page - 1) {
+                            let distance = 0.75 + 2 * parseInt(index);
+                            distance += "rem";
+                            return `<input id="dot-${pageNumber}" 
+                            onInput='{
+                                document.getElementById("pacman").style.transform = "translateX(${distance})"}
+                                setTimeout(() => {
+                                    vmusic.showAllSongs(this.value);
+                                }, 500);
+                                 ' value=${pageNumber} type="radio" name="dots">
+                                    <label title="page ${pageNumber}" for="dot-${pageNumber}"></label>
+                                    `;
+                        } else {
+                            return `<input id="dot-${pageNumber}" value=${pageNumber} type="radio" name="dots" checked="checked">
+                                    <label title="page ${pageNumber}" for="dot-${pageNumber}"></label>
+                                    `;
+                        }
+                    });
+                pages = pages.join("");
+                let distance = 0.75 + 2 * parseInt(page - 1);
+                distance += "rem";
+                let pagination = `<div id="pagination">	
+                    ${pages}
+                       <div id="pacman" style='transform: translateX(${distance})'></div>
+                       </div>`;
+                songListElement = songListElement.concat(pagination);
+            }
+            allSongList.innerHTML = songListElement;
         });
     },
 
@@ -201,12 +242,23 @@ const vmusic = {
         );
 
         setTimeout(() => {
-            durationTime.textContent = this.convertTime(currentSong.duration);
-            $("#playlist .song.playing-song").classList.remove("playing-song");
-            $(
-                `#playlist .song[song-index="${this.settings.currentSongIndex}"]`
-            ).classList.add("playing-song");
-            this.scrollIntoView();
+            if (currentSong.duration) {
+                durationTime.textContent = this.convertTime(
+                    currentSong.duration
+                );
+            }
+        }, 3000);
+
+        setTimeout(() => {
+            if (!playListContainer.classList.contains("hide-element")) {
+                $("#playlist .song.playing-song").classList.remove(
+                    "playing-song"
+                );
+                $(
+                    `#playlist .song[song-index="${this.settings.currentSongIndex}"]`
+                ).classList.add("playing-song");
+                this.scrollIntoView();
+            }
         }, 200);
     },
 
@@ -264,20 +316,24 @@ const vmusic = {
         });
     },
 
-    addNewSong: function (newSong) {
-        const notShowDashboard = dashboard.classList.contains("hide-element");
-        const isShowPlayList =
-            !playListContainer.classList.contains("hide-element");
-        this.songs.push(newSong);
-        if (isShowPlayList) {
-            this.showPlayList();
-        }
+    addNewSong: function (songId) {
+        this.ajax(`./php-api/add-a-song.php?id=${songId}`, (res) => {
+            const thisSong = res.data;
+            this.songs.push(thisSong);
+            const notShowDashboard =
+                dashboard.classList.contains("hide-element");
+            const isShowPlayList =
+                !playListContainer.classList.contains("hide-element");
+            if (isShowPlayList) {
+                this.showPlayList();
+            }
 
-        if (notShowDashboard) {
-            this.setSong();
-            this.loadSong();
-            dashboard.classList.remove("hide-element");
-        }
+            if (notShowDashboard) {
+                this.setSong();
+                this.loadSong();
+                dashboard.classList.remove("hide-element");
+            }
+        });
     },
 
     // Listening and handling function declare
@@ -482,7 +538,7 @@ const vmusic = {
                         return `
                             <div song-id="${
                                 song.songId
-                            }" class="flex space-between song">
+                            }" class="space-between song">
                                 <div class="flex">
                                     <div class="song-image" style="background-image: url('${
                                         song.image
@@ -528,14 +584,8 @@ const vmusic = {
             const addSongClicked = e.target.closest(".add");
             if (addSongClicked) {
                 addSongClicked.classList.add("hide-element");
-                thisMusic.ajax(
-                    `./php-api/add-a-song.php?id=${addSongClicked.parentElement.getAttribute(
-                        "song-id"
-                    )}`,
-                    (res) => {
-                        const thisSong = res.data;
-                        thisMusic.addNewSong(thisSong);
-                    }
+                thisMusic.addNewSong(
+                    addSongClicked.parentElement.getAttribute("song-id")
                 );
             }
         });
@@ -560,6 +610,44 @@ const vmusic = {
                 thisMusic.showPlayList();
             } else {
                 playListContainer.classList.add("hide-element");
+            }
+        });
+
+        // on click song list
+        allSongList.addEventListener("click", (e) => {
+            const addSongClicked = e.target.closest(".add");
+            const songClicked = e.target.closest("#all-song-list .song");
+            if (addSongClicked) {
+                addSongClicked.classList.add("hide-element");
+                thisMusic.addNewSong(
+                    addSongClicked.parentElement.getAttribute("song-id")
+                );
+            }
+
+            if (songClicked && !addSongClicked) {
+                const songId = songClicked.getAttribute("song-id");
+                const inPlaylistIndex = thisMusic.songs.findIndex(
+                    (s) => s.songId === songId
+                );
+                var currentSongIndex;
+                if (inPlaylistIndex >= 0) {
+                    currentSongIndex = inPlaylistIndex;
+                } else {
+                    songClicked.lastElementChild.classList.add("hide-element");
+                    thisMusic.addNewSong(songId);
+                    setTimeout(() => {
+                        currentSongIndex = thisMusic.songs.length - 1;
+                    }, 100);
+                }
+                setTimeout(() => {
+                    if (
+                        thisMusic.settings.currentSongIndex != currentSongIndex
+                    ) {
+                        thisMusic.settings.currentSongIndex = currentSongIndex;
+                        thisMusic.loadSong();
+                        currentSong.play();
+                    }
+                }, 200);
             }
         });
     },
@@ -592,6 +680,19 @@ const vmusic = {
             // Load all songs of vmusic website
             this.showAllSongs();
         });
+    },
+
+    logout: function () {
+        let check = confirm("Do you really want to log out?");
+        if (check) {
+            this.ajax("./php-api/logout.php", (res) => {
+                if (res.status) {
+                    location.href = "./login.php";
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
     },
 };
 

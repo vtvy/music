@@ -2,11 +2,16 @@ function ajax(option, url, callback = () => {}, data) {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function async() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+            console.log(this.responseText);
             callback(JSON.parse(this.responseText));
         }
     };
     xmlHttp.open(option, url, true);
     if (option === "POST") {
+        xmlHttp.setRequestHeader(
+            "Content-type",
+            "application/x-www-form-urlencoded"
+        );
         xmlHttp.send(data);
     } else {
         xmlHttp.send();
@@ -15,12 +20,15 @@ function ajax(option, url, callback = () => {}, data) {
 
 function signup(username, password) {
     let data = "username=" + username + "&password=" + password;
-
     ajax(
         "POST",
         "./php-api/signup.php",
         (res) => {
-            console.log(res);
+            if (res.status) {
+                location.href = "/";
+            } else {
+                alert("Some thing went wrong, please try again");
+            }
         },
         data
     );
@@ -30,8 +38,11 @@ function login(username, password) {
     let data = "username=" + username + "&password=" + password;
 
     ajax("GET", `./php-api/login.php?${data}`, (res) => {
-        console.log(res);
-        console.log(res);
+        if (res.status) {
+            location.href = "/";
+        } else {
+            alert(res.message);
+        }
     });
 }
 
@@ -65,13 +76,19 @@ function addSinger(
     });
 }
 
-function updateSinger(singerId, singerName, e) {
+function updateSinger(singerId, singerName, e, selectSingers) {
     singerId = parseInt(singerId);
     ajax(
         "GET",
         `../php-api/update-singer.php?id=${singerId}&name=${singerName}`,
         (res) => {
             if (res.status) {
+                for (let i = 0; i < selectSingers.length; i++) {
+                    if (selectSingers.options[i].value == singerId) {
+                        console.log(selectSingers.options[i].innerHTML);
+                        selectSingers.options[i].innerHTML = singerName;
+                    }
+                }
                 e.innerHTML = `${singerName}`;
             } else {
                 location.href = "./";
@@ -115,4 +132,20 @@ function updateSong(songId, newSongName, element) {
 
 function deleteSong(songId, element) {
     ajax("GET", `../php-api/delete-song.php?id=${parseInt(songId)}`);
+}
+
+function changePasswd(pass, newPass) {
+    let data = "password=" + pass + "&newPassword=" + newPass;
+    this.ajax(
+        "POST",
+        `./php-api/change.php`,
+        (res) => {
+            if (res.status) {
+                location.href = "./login.php";
+            } else {
+                alert(res.message);
+            }
+        },
+        data
+    );
 }

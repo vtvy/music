@@ -6,7 +6,7 @@ require_once "../data/mysql-connection.php";
 
 $username = $_GET['username'];
 $password = $_GET['password'];
-$query = "SELECT username, passwd FROM users 
+$query = "SELECT uid, username, passwd FROM users 
             WHERE username = '$username' AND passwd = '$password';";
 
 
@@ -20,15 +20,12 @@ if (!$result) {
     echo json_encode($response);
 } else {
     if ($result->num_rows > 0) {
-
         $row = $result->fetch_assoc();
+        session_start();
+        $_SESSION['vmusic'] = $row["uid"];
         $response = [
             "status" => true,
             "message" => "login success",
-            "data" => [
-                "username" => $row["username"],
-                "password" => $row["passwd"],
-            ]
         ];
         echo json_encode($response);
     } else {

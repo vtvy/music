@@ -1,4 +1,8 @@
 <?php
+session_start();
+if (!isset($_SESSION['vmusic'])) {
+    header('Location: ./login.php');
+}
 $page_title = "Home page";
 $css = "./assets/css/main";
 require_once "./templates/header.php";
@@ -14,17 +18,19 @@ require_once "./templates/header.php";
             </div>
             <div id="suggest-list" class="hide-element"></div>
         </div>
-        <div id="user-bar">VeoCT</div>
+
+        <div id="user-bar"><?php echo isset($_COOKIE['vname']) ? "Welcome $_COOKIE[vname]" :
+                                '<button class="btn" onClick={vmusic.logout();}>Log out</button>' ?>
+            <button class="btn" onClick="{location.href = './change-password.php';}">Change Password</button>
+        </div>
     </header>
     <div id="content" class="flex">
         <div id="all-song-list">
         </div>
-        <!-- class="hide-element" -->
-        <div id="playlist-container">
+        <div id="playlist-container" class="hide-element">
             <div id="playlist"></div>
         </div>
     </div>
-
     <div id="dashboard">
         <div id="left-db">
             <div id="cd">
