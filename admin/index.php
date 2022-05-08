@@ -1,12 +1,12 @@
 <?php
-session_start();
-if (!isset($_SESSION['vmusic']) || $_SESSION["vmusic"] != 1) {
-    header('Location: ./');
-}
+    session_start();
+    if (!isset($_SESSION['vmusic']) || $_SESSION["vmusic"] != 1) {
+        header('Location: ../');
+    }
 
-$page_title = "Admin page";
-$css = "../assets/css/main";
-require_once "../templates/header.php";
+    $page_title = "Admin page";
+    $admin = true;
+    require_once "../templates/header.php";
 ?>
 <main class="form-container">
     <div id="song-side">
@@ -211,5 +211,5 @@ require_once "../templates/header.php";
     })
 </script>
 <?php
-require_once '../templates/footer.php'
+    require_once '../templates/footer.php'
 ?>

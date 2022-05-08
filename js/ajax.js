@@ -71,7 +71,7 @@ function addSinger(
             `;
             singerList.appendChild(aSinger);
         } else {
-            singerWarning.textContent = "This singer is exist";
+            singerWarning.textContent = res.message;
         }
     });
 }

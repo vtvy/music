@@ -1,11 +1,10 @@
 <?php
-session_start();
-if (isset($_SESSION['vmusic'])) {
-    header('Location: ./');
-}
-$page_title = "Sign up";
-$css = "./assets/css/main";
-require_once "./templates/header.php";
+    session_start();
+    if (isset($_SESSION['vmusic'])) {
+        header('Location: ./');
+    }
+    $page_title = "Sign up";
+    require_once "./templates/header.php";
 ?>
 <div class="sign-form">
     <form class="form">
@@ -57,5 +56,5 @@ require_once "./templates/header.php";
     });
 </script>
 <?php
-require_once './templates/footer.php'
+    require_once './templates/footer.php'
 ?>

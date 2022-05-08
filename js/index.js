@@ -317,22 +317,23 @@ const vmusic = {
     },
 
     addNewSong: function (songId) {
-        this.ajax(`./php-api/add-a-song.php?id=${songId}`, (res) => {
+        this.ajax(`./php-api/add-to-playlist.php?id=${songId}`, (res) => {
             const thisSong = res.data;
             this.songs.push(thisSong);
             const notShowDashboard =
                 dashboard.classList.contains("hide-element");
             const isShowPlayList =
                 !playListContainer.classList.contains("hide-element");
-            if (isShowPlayList) {
-                this.showPlayList();
-            }
-
-            if (notShowDashboard) {
-                this.setSong();
-                this.loadSong();
-                dashboard.classList.remove("hide-element");
-            }
+            setTimeout(() => {
+                if (isShowPlayList) {
+                    this.showPlayList();
+                }
+                if (notShowDashboard) {
+                    this.setSong();
+                    this.loadSong();
+                    dashboard.classList.remove("hide-element");
+                }
+            }, 100);
         });
     },
 
@@ -654,7 +655,7 @@ const vmusic = {
 
     start: function () {
         // Load all songs of playlists
-        this.ajax("./php-api/get-songs.php", (res) => {
+        this.ajax("./php-api/get-playlist.php", (res) => {
             this.songs = res.data;
             // Call all methods of vmusic object
             if (this.songs.length) {

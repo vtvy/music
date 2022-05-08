@@ -1,25 +1,24 @@
 <?php
-header('Content-Type: application/json');
-
-require_once "../data/mysql-connection.php";
-
-
-$singer = $_GET['singer-name'];
-$query = "INSERT INTO singers(singer_name) VALUES" . "('$singer');";
+    header('Content-Type: application/json');
+    require_once "../data/mysql-connection.php";
 
 
-$result = $conn->query($query);
+    $singer = $_GET['singer-name'];
+    $query = "INSERT INTO singers(singer_name) VALUES" . "('$singer');";
 
-if (!$result) {
-    $response = [
-        "status" => false,
-        "message" => "some thing went wrong",
-    ];
-    echo json_encode($response);
-} else {
-    $response = [
-        "status" => true,
-        "message" => "add singer successfully",
-    ];
-    echo json_encode($response);
-}
+
+    $result = $conn->query($query);
+
+    if (!$result) {
+        $response = [
+            "status" => false,
+            "message" => "singer name is exist",
+        ];
+        echo json_encode($response);
+    } else {
+        $response = [
+            "status" => true,
+        ];
+        echo json_encode($response);
+    }
+?>

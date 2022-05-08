@@ -1,37 +1,44 @@
 <?php
-header('Content-Type: application/json');
+    header('Content-Type: application/json');
 
-require_once "../data/mysql-connection.php";
+    require_once "../data/mysql-connection.php";
 
 
-$songId = $_GET['id'];
-$query = "CALL del_song($songId);";
+    session_start();
+    $uid = $_SESSION["vmusic"];
+    if($uid != 1) {
+        unset($_SESSION['vmusic']);
+        header('Location: ../');
+    }
 
-$result = $conn->query($query);
+    $songId = $_GET['id'];
+    $query = "CALL del_song($songId);";
 
-if (!$result) {
-    $response = [
-        "status" => false,
-        "message" => "some thing went wrong",
-    ];
+    $result = $conn->query($query);
 
-    echo $conn->error;
-    echo json_encode($response);
-} else {
-    $row = $result->fetch_assoc();
-    if ($row['del'] == 1) {
-        unlink('.' . $row['s_path']);
-        unlink('.' . $row['s_img_path']);
-        $response = [
-            "status" => true,
-            "message" => "delete success",
-        ];
-        echo json_encode($response);
-    } else {
+    if (!$result) {
         $response = [
             "status" => false,
             "message" => "some thing went wrong",
         ];
+
         echo json_encode($response);
+    } else {
+        $row = $result->fetch_assoc();
+        if ($row['del'] == 1) {
+            unlink('.' . $row['s_path']);
+            unlink('.' . $row['s_img_path']);
+            $response = [
+                "status" => true,
+                "message" => "delete success",
+            ];
+            echo json_encode($response);
+        } else {
+            $response = [
+                "status" => false,
+                "message" => "some thing went wrong",
+            ];
+            echo json_encode($response);
+        }
     }
-}
+?>

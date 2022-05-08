@@ -1,11 +1,10 @@
 <?php
-session_start();
-if (!isset($_SESSION['vmusic'])) {
-    header('Location: ./login.php');
-}
-$page_title = "Change password";
-$css = "./assets/css/main";
-require_once "./templates/header.php";
+    session_start();
+    if (!isset($_SESSION['vmusic'])) {
+        header('Location: ./login.php');
+    }
+    $page_title = "Change password";
+    require_once "./templates/header.php";
 ?>
 <div class="sign-form">
     <form class="form">
@@ -53,5 +52,5 @@ require_once "./templates/header.php";
     });
 </script>
 <?php
-require_once './templates/footer.php'
+    require_once './templates/footer.php'
 ?>

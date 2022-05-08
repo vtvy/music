@@ -1,11 +1,10 @@
 <?php
-session_start();
-if (!isset($_SESSION['vmusic'])) {
-    header('Location: ./login.php');
-}
-$page_title = "Home page";
-$css = "./assets/css/main";
-require_once "./templates/header.php";
+    session_start();
+    if (!isset($_SESSION['vmusic'])) {
+        header('Location: ./login.php');
+    }
+    $page_title = "Home page";
+    require_once "./templates/header.php";
 ?>
 <div id="main">
     <header id="header" class="flex">
@@ -83,5 +82,5 @@ require_once "./templates/header.php";
 <script src="./js/index.js?v=<?php echo time(); ?>">
 </script>
 <?php
-require_once './templates/footer.php'
+    require_once './templates/footer.php'
 ?>
