@@ -5,10 +5,6 @@
 
     session_start();
     $uid = $_SESSION["vmusic"];
-    if($uid != 1) {
-        unset($_SESSION['vmusic']);
-        header('Location: ../');
-    }
 
     $singerId = $_GET['id'];
     $query = "CALL del_singer($singerId);";
