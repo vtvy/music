@@ -40,6 +40,7 @@ const vmusic = {
         const xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function async() {
             if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                console.log(this.responseText);
                 callback(JSON.parse(this.responseText));
             }
         };
@@ -530,20 +531,21 @@ const vmusic = {
                 removeInput.classList.remove("hide-element");
                 suggestList.classList.remove("hide-element");
                 this.ajax(`./php-api/search-songs.php?kw=${kw}`, (res) => {
-                    const newSuggestList = res.data;
-                    searchBar.firstElementChild.classList.add("searching");
-                    if (
-                        !newSuggestList.length &&
-                        searchBar.firstElementChild.classList.contains(
-                            "searching"
-                        )
-                    ) {
-                        searchBar.firstElementChild.classList.remove(
-                            "searching"
-                        );
-                    }
-                    const List = newSuggestList.map((song) => {
-                        return `
+                    if (res.status) {
+                        const newSuggestList = res.data;
+                        searchBar.firstElementChild.classList.add("searching");
+                        if (
+                            !newSuggestList.length &&
+                            searchBar.firstElementChild.classList.contains(
+                                "searching"
+                            )
+                        ) {
+                            searchBar.firstElementChild.classList.remove(
+                                "searching"
+                            );
+                        }
+                        const List = newSuggestList.map((song) => {
+                            return `
                             <div song-id="${
                                 song.songId
                             }" class="space-between song">
@@ -569,8 +571,9 @@ const vmusic = {
                                 }
                             </div>
                             `;
-                    });
-                    suggestList.innerHTML = List.join("");
+                        });
+                        suggestList.innerHTML = List.join("");
+                    }
                 });
             }
         });

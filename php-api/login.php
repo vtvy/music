@@ -6,6 +6,8 @@
 
     $username = $_GET['username'];
     $password = $_GET['password'];
+    $username = mysqli_real_escape_string($conn, $username);
+    $password = mysqli_real_escape_string($conn, $password);
     $query = "SELECT uid, username, passwd FROM users 
                 WHERE username = '$username' AND passwd = '$password';";
 

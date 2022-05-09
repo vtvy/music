@@ -5,6 +5,8 @@
 
     $username = $_POST['username'];
     $password = $_POST['password'];
+    $username = mysqli_real_escape_string($conn, $username);
+    $password = mysqli_real_escape_string($conn, $password);
     $query = "CALL signup('$username','$password');";
 
     $result = $conn->query($query);

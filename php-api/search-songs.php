@@ -6,6 +6,7 @@
 
     $keyword = $_GET['kw'];
     $new_kw = str_replace(" ", "%' OR s_name LIKE '%", $keyword);
+    $new_kw = mysqli_real_escape_string($conn, $new_kw);
     $query = "SELECT s_id, s_name, s_img_path, singer_name 
         FROM songs s JOIN singers sg ON s.singer_id = sg.singer_id 
         WHERE s_name LIKE '%$keyword%' OR s_name LIKE '%$new_kw%' LIMIT 5;";
@@ -30,7 +31,8 @@
         }
         $response = [
             "status" => true,
-            "data" => $data
+            "data" => $data,
+            "test" => $new_kw,
         ];
         echo json_encode($response);
     }
