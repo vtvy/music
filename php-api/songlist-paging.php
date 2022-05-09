@@ -9,7 +9,7 @@
     $result = $conn->query($query);
     $row = $result->fetch_row();
     $p_total = ceil($row[0] / $record_ppage);
-    $page = $_GET["page"];
+    $page = ($_GET["page"] <= $p_total && $_GET["page"] >= 1)?$_GET["page"]:1;
     $start = ($page - 1) * $record_ppage;
 
     // get songs in page

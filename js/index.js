@@ -465,6 +465,7 @@ const vmusic = {
         // Change the time bar
         timeBar.onclick = (e) => {
             const percent = e.target.value;
+            thisMusic.setUserSettings("time", parseFloat(percent));
             currentSong.currentTime = (currentSong.duration / 100) * percent;
         };
 
@@ -474,8 +475,14 @@ const vmusic = {
 
         currentSong.onended = () => {
             const length = thisMusic.songs.length;
-            thisMusic.nextSong();
-            currentSong.play();
+            if (
+                this.settings.repeating ||
+                (!this.settings.repeating &&
+                    this.settings.currentSongIndex !== length - 1)
+            ) {
+                thisMusic.nextSong();
+                currentSong.play();
+            }
         };
 
         playList.addEventListener("click", (e) => {
@@ -488,7 +495,7 @@ const vmusic = {
                 thisMusic.loadSong();
                 currentSong.play();
             }
-            if (deleteClicked) {
+            if (deleteClicked && confirm("Do you really want to delete it?")) {
                 let clickedSongIndex =
                     deleteClicked.parentElement.getAttribute("song-index");
                 const songId = thisMusic.songs[clickedSongIndex].songId;

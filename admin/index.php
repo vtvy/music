@@ -64,8 +64,8 @@
                         <h4>$row[s_name]</h4>
                         <div class='update-delete-icon flex' editFor='$row[s_id]'>
                             <h5>$row[singer_name]</h5>
-                            <i class='fa-solid fa-pen-to-square edit'></i>
-                            <i class='fa-solid fa-trash warning del'></i>
+                            <i class='fa-solid fa-pen-to-square btn edit'></i>
+                            <i class='fa-solid fa-trash warning btn del'></i>
                         </div>
                     </div>";
                 }
@@ -92,20 +92,21 @@
             $result = $conn->query($query);
             if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo
+                    $singer = 
                     "<div class='singer'>
                         <h4>$row[singer_name]</h4>
                         <div class='update-delete-icon flex' editFor='$row[singer_id]' numberSong='$row[song_cnt]'>
                             <h5>$row[song_cnt] songs</h5>
-                            <i class='fa-solid fa-pen-to-square edit'></i>
-                            <i class='fa-solid fa-trash warning del'></i>
-                        </div>
-                    </div>";
+                            <i class='fa-solid fa-pen-to-square btn edit'></i>";
+                    $del = ($row["song_cnt"]==0)?"<i class='fa-solid fa-trash warning del btn'></i>":"";
+                    $footer = "</div></div>";
+                    echo $singer . $del . $footer;
                 }
             } ?>
         </div>
     </div>
 </main>
+ 
 <script src="../js/ajax.js?v=<?php echo time() ?>"> </script>
 <script>
     // edit song
@@ -198,13 +199,13 @@
     // delete singer
     document.querySelectorAll("#singer-list .del").forEach(function(del) {
         del.addEventListener("click", function(e) {
-            let parentNode = e.target.parentNode;
-            let singerId = parentNode.attributes['editFor'].value;
-            let numberSong = parentNode.attributes['numberSong'].value;
-            if (parentNode.previousElementSibling.outerText !== ' Update' && numberSong === '0') {
+            let parentElement = e.target.parentElement;
+            let singerId = parentElement.attributes['editFor'].value;
+            let numberSong = parentElement.attributes['numberSong'].value;
+            if (parentElement.previousElementSibling.outerText !== ' Update' && numberSong === '0') {
 
                 if (confirm("Do you really want to delete this singer ?")) {
-                    deleteSinger(singerId, parentNode);
+                    deleteSinger(singerId, parentElement);
                 }
             }
         })

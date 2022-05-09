@@ -2,7 +2,6 @@ function ajax(option, url, callback = () => {}, data) {
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function async() {
         if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-            console.log(this.responseText);
             callback(JSON.parse(this.responseText));
         }
     };
@@ -85,7 +84,6 @@ function updateSinger(singerId, singerName, e, selectSingers) {
             if (res.status) {
                 for (let i = 0; i < selectSingers.length; i++) {
                     if (selectSingers.options[i].value == singerId) {
-                        console.log(selectSingers.options[i].innerHTML);
                         selectSingers.options[i].innerHTML = singerName;
                     }
                 }
@@ -131,7 +129,13 @@ function updateSong(songId, newSongName, element) {
 }
 
 function deleteSong(songId, element) {
-    ajax("GET", `../php-api/delete-song.php?id=${parseInt(songId)}`);
+    ajax("GET", `../php-api/delete-song.php?id=${parseInt(songId)}`, (res) => {
+        if (res.status) {
+            location.href = "./";
+        } else {
+            alert(res.message);
+        }
+    });
 }
 
 function changePasswd(pass, newPass) {

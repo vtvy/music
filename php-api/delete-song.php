@@ -19,7 +19,7 @@
     if (!$result) {
         $response = [
             "status" => false,
-            "message" => "some thing went wrong",
+            "message" => "some thing went wrong, please try later"
         ];
 
         echo json_encode($response);
@@ -30,13 +30,12 @@
             unlink('.' . $row['s_img_path']);
             $response = [
                 "status" => true,
-                "message" => "delete success",
             ];
             echo json_encode($response);
         } else {
             $response = [
                 "status" => false,
-                "message" => "some thing went wrong",
+                "message" => "some thing went wrong, please try later"
             ];
             echo json_encode($response);
         }

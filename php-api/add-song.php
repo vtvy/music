@@ -28,7 +28,7 @@
                 $_FILES["song-image"]["tmp_name"],
                 "." . $image_path
             );
-            header('Location: ./');
+            header('Location: ../admin/');
             exit();
         }
     } else {
