@@ -40,7 +40,6 @@ const vmusic = {
         const xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function async() {
             if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                console.log(this.responseText);
                 callback(JSON.parse(this.responseText));
             }
         };
