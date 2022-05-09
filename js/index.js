@@ -346,69 +346,69 @@ const vmusic = {
         });
         cdRotate.pause();
 
-        repeatBtn.onclick = () => {
+        repeatBtn.addEventListener("click", () => {
             thisMusic.settings.repeating = !thisMusic.settings.repeating;
             thisMusic.setUserSettings(
                 "repeating",
                 thisMusic.settings.repeating
             );
             repeatBtn.classList.toggle("active", thisMusic.settings.repeating);
-        };
+        });
 
-        prevBtn.onclick = () => {
+        prevBtn.addEventListener("click", () => {
             if (thisMusic.settings.random) {
                 thisMusic.randomSong();
             } else {
                 thisMusic.prevSong();
             }
             currentSong.play();
-        };
+        });
 
         // When click on play button
-        playBtn.onclick = () => {
+        playBtn.addEventListener("click", () => {
             thisMusic.playing;
             if (thisMusic.playing) {
                 currentSong.pause();
             } else {
                 currentSong.play();
             }
-        };
+        });
 
-        nextBtn.onclick = () => {
+        nextBtn.addEventListener("click", () => {
             if (thisMusic.settings.random) {
                 thisMusic.randomSong();
             } else {
                 thisMusic.nextSong();
             }
             currentSong.play();
-        };
+        });
 
-        randomBtn.onclick = () => {
+        randomBtn.addEventListener("click", () => {
             thisMusic.settings.random = !thisMusic.settings.random;
             thisMusic.setUserSettings("random", thisMusic.settings.random);
             randomBtn.classList.toggle("active", thisMusic.settings.random);
-        };
+        });
 
-        volumeBtn.onclick = (e) => {
+        volumeBtn.addEventListener("click", (e) => {
             if (e.target.tagName === "I") {
                 thisMusic.muteSong();
             }
-        };
+        });
 
-        currentSong.onplay = () => {
+        currentSong.addEventListener("play", () => {
             thisMusic.playing = true;
             playBtn.classList.add("playing");
             cdRotate.play();
-        };
+        });
 
-        currentSong.onpause = () => {
+        currentSong.addEventListener("pause", () => {
             thisMusic.playing = false;
             playBtn.classList.remove("playing");
             cdRotate.pause();
-        };
+        });
 
         // Set the time bar
-        currentSong.ontimeupdate = () => {
+        currentSong.addEventListener("timeupdate", () => {
             const duration = currentSong.duration;
             if (duration) {
                 const currentSongTime = currentSong.currentTime;
@@ -424,9 +424,9 @@ const vmusic = {
                     timeBar.style.background = thisMusic.setColor(percent);
                 }
             }
-        };
+        });
 
-        volumeSlider.oninput = (e) => {
+        volumeSlider.addEventListener("input", (e) => {
             const percent = e.target.value;
             currentSong.volume = percent / 100;
             volumeSlider.style.background = thisMusic.setColor(percent);
@@ -437,7 +437,7 @@ const vmusic = {
             ) {
                 thisMusic.muteSong();
             }
-        };
+        });
 
         volumeSlider.addEventListener("wheel", (e) => {
             let changeValue = parseInt(e.deltaY * -0.05);
@@ -456,24 +456,24 @@ const vmusic = {
             }
         });
 
-        timeBar.oninput = (e) => {
+        timeBar.addEventListener("input", (e) => {
             const percent = e.target.value;
             timeBar.style.background = thisMusic.setColor(percent);
             timeBar.setAttribute("clicked", "true");
-        };
+        });
 
         // Change the time bar
-        timeBar.onclick = (e) => {
+        timeBar.addEventListener("click", (e) => {
             const percent = e.target.value;
             thisMusic.setUserSettings("time", parseFloat(percent));
             currentSong.currentTime = (currentSong.duration / 100) * percent;
-        };
+        });
 
-        timeBar.onmouseup = function () {
+        timeBar.addEventListener("mouseup", () => {
             timeBar.setAttribute("clicked", "false");
-        };
+        });
 
-        currentSong.onended = () => {
+        currentSong.addEventListener("ended", () => {
             const length = thisMusic.songs.length;
             if (
                 this.settings.repeating ||
@@ -483,7 +483,7 @@ const vmusic = {
                 thisMusic.nextSong();
                 currentSong.play();
             }
-        };
+        });
 
         playList.addEventListener("click", (e) => {
             const deleteClicked = e.target.closest(".del");

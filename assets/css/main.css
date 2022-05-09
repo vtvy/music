@@ -253,10 +253,9 @@ option {
     justify-content: center;
     align-items: center;
     position: relative;
-    width: 0.5rem;
+    width: 1.5rem;
     margin-left: auto;
     margin-right: auto;
-    border-radius: 50%;
 }
 
 #volume-btn::before {
@@ -265,7 +264,7 @@ option {
     height: 1.5rem;
     display: none;
     position: absolute;
-    bottom: 1rem;
+    bottom: 2rem;
 }
 
 #volume-btn:hover #volume-slider,
@@ -277,7 +276,7 @@ option {
     width: 8rem;
     position: absolute;
     display: none;
-    bottom: 1.5rem;
+    bottom: 2rem;
 }
 
 #volume-slider::-webkit-slider-thumb {
