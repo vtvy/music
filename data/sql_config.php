@@ -1,7 +1,7 @@
 <?php
     $host       = "172.0.0.1";
     $username   = "root";
-    $password   = NULL;
+    $password   = "trieuvy";
     $dbname     = "vmusic";
     $charset = "utf8";
 ?>
