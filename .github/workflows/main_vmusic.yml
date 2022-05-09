@@ -56,5 +56,5 @@ jobs:
         with:
           app-name: 'vmusic'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8C7AB2F7DC6849C8A4144D8FE47E58A2 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_933C724B98264231B52F194E24B06D31 }}
           package: .
