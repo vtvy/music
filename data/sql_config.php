@@ -1,7 +1,6 @@
 <?php
-    $host       = "172.0.0.1:54504";
-    $username   = "azure";
-    $password   = "6#vWHD_$";
+    $host       = "vmusic-server.mysql.database.azure.com";
+    $username   = "test";
+    $password   = "test";
     $dbname     = "vmusic";
-    $charset = "utf8";
 ?>
