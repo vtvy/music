@@ -6,9 +6,9 @@
 
     // compute page number
     $query = "SELECT count(*) FROM songs;";
-    $result = $conn->query($query);
-    $row = $result->fetch_row();
-    $p_total = ceil($row[0] / $record_ppage);
+    $resultp = $conn->query($query);
+    $rowp = $resultp->fetch_row();
+    $p_total = ceil($rowp[0] / $record_ppage);
     $page = ($_GET["page"] <= $p_total && $_GET["page"] >= 1)?$_GET["page"]:1;
     $start = ($page - 1) * $record_ppage;
 
@@ -19,7 +19,7 @@
 
     $songs_result = $conn->query($query);
 
-    if (!$songs_result) {
+    if (!$songs_result || !$resultp) {
         $response = [
             "status" => false,
             "message" => "some thing went wrong"
@@ -27,19 +27,20 @@
         echo json_encode($response);
     } else {
         $data = array();
-        while ($row2 = $songs_result->fetch_assoc()) {
+        while ($row = $songs_result->fetch_assoc()) {
             $data[] = array(
-                "singerName" => $row2["singer_name"],
-                "name" => $row2["s_name"],
-                "path" => $row2["s_path"],
-                "image" => $row2["s_img_path"],
-                "songId" => $row2["s_id"]
+                "singerName" => $row["singer_name"],
+                "name" => $row["s_name"],
+                "path" => $row["s_path"],
+                "image" => $row["s_img_path"],
+                "songId" => $row["s_id"]
             );
         }
+
         $response = [
             "status" => true,
-            "data" => $data,
-            "pageTotal" => $p_total
+            "message" => "get songs success",
+            "data" => $data
         ];
         echo json_encode($response);
     }
