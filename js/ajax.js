@@ -24,7 +24,7 @@ function signup(username, password) {
         "./php-api/signup.php",
         (res) => {
             if (res.status) {
-                location.href = "/";
+                location.href = "./";
             } else {
                 alert("Some thing went wrong, please try again");
             }
@@ -38,7 +38,7 @@ function login(username, password) {
 
     ajax("GET", `./php-api/login.php?${data}`, (res) => {
         if (res.status) {
-            location.href = "/";
+            location.href = "./";
         } else {
             alert(res.message);
         }
